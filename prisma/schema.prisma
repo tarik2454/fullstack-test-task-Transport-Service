@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String      @id @default(uuid())
+  firstName String
+  lastName  String
+  email     String      @unique
+  password  String
+  role      Role
+  orders    Order[]     @relation("UserOrders")
+  createdAt DateTime    @default(now())
+  Warehouse Warehouse[]
+  Client    Client[]
+  Order     Order[]
+}
+
+enum Role {
+  MANAGER
+  DRIVER
+}
+
+model Warehouse {
+  id        String  @id @default(uuid())
+  name      String
+  address   String
+  managerId String
+  manager   User    @relation(fields: [managerId], references: [id])
+  Order     Order[]
+}
+
+model Client {
+  id        String  @id @default(uuid())
+  name      String
+  address   String
+  phone     String
+  managerId String
+  manager   User    @relation(fields: [managerId], references: [id])
+  Order     Order[]
+}
+
+model Order {
+  id          String      @id @default(uuid())
+  warehouseId String
+  clientId    String
+  managerId   String
+  driverId    String?
+  status      OrderStatus @default(NEW)
+
+  warehouse Warehouse @relation(fields: [warehouseId], references: [id])
+  client    Client    @relation(fields: [clientId], references: [id])
+  manager   User      @relation("UserOrders", fields: [managerId], references: [id])
+  driver    User?     @relation(fields: [driverId], references: [id])
+}
+
+enum OrderStatus {
+  NEW
+  ASSIGNED
+  IN_PROGRESS
+  COMPLETED
+}
