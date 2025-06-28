@@ -1,5 +1,5 @@
 {
-  "name": "fullstack-test-task-transport-service",
+  "name": "nextjs-prisma",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -10,25 +10,30 @@
   },
   "dependencies": {
     "@prisma/client": "^6.10.1",
+    "@prisma/extension-accelerate": "^2.0.1",
+    "@types/jsonwebtoken": "^9.0.10",
     "antd": "^5.26.2",
-    "autoprefixer": "^10.4.21",
     "bcryptjs": "^3.0.2",
+    "jose": "^6.0.11",
+    "jsonwebtoken": "^9.0.2",
     "next": "15.3.4",
-    "postcss": "^8.5.6",
-    "prisma": "^6.10.1",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "zod": "^3.25.67"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
+    "@types/antd": "^0.12.32",
+    "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.3.4",
-    "tailwindcss": "^4.1.11",
+    "prisma": "^6.10.1",
+    "tailwindcss": "^4",
+    "tsx": "^4.20.3",
     "typescript": "^5"
   }
 }

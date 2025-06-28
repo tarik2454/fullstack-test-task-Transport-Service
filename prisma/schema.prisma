@@ -1,5 +1,12 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
 generator client {
   provider = "prisma-client-js"
+  output   = "generated"
 }
 
 datasource db {
@@ -8,17 +15,19 @@ datasource db {
 }
 
 model User {
-  id        String      @id @default(uuid())
-  firstName String
-  lastName  String
-  email     String      @unique
-  password  String
-  role      Role
-  orders    Order[]     @relation("UserOrders")
-  createdAt DateTime    @default(now())
-  Warehouse Warehouse[]
-  Client    Client[]
-  Order     Order[]
+  id            String      @id @default(uuid())
+  firstName     String
+  lastName      String
+  email         String      @unique
+  password      String
+  role          Role
+  orders        Order[]     @relation("UserOrders")
+  drivingOrders Order[]     @relation("DriverOrders")
+  createdAt     DateTime    @default(now())
+  warehouse     Warehouse[]
+  client        Client[]
+
+  @@map("users")
 }
 
 enum Role {
@@ -32,7 +41,9 @@ model Warehouse {
   address   String
   managerId String
   manager   User    @relation(fields: [managerId], references: [id])
-  Order     Order[]
+  order     Order[]
+
+  @@map("warehouses")
 }
 
 model Client {
@@ -42,7 +53,9 @@ model Client {
   phone     String
   managerId String
   manager   User    @relation(fields: [managerId], references: [id])
-  Order     Order[]
+  order     Order[]
+
+  @@map("clients")
 }
 
 model Order {
@@ -56,7 +69,12 @@ model Order {
   warehouse Warehouse @relation(fields: [warehouseId], references: [id])
   client    Client    @relation(fields: [clientId], references: [id])
   manager   User      @relation("UserOrders", fields: [managerId], references: [id])
-  driver    User?     @relation(fields: [driverId], references: [id])
+  driver    User?     @relation("DriverOrders", fields: [driverId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("orders")
 }
 
 enum OrderStatus {
