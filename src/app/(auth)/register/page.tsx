@@ -21,8 +21,6 @@ export default function RegisterPage() {
   };
 
   const handleSubmit = async () => {
-    console.log("message");
-    console.log("Отправка данных на сервер:", form);
     try {
       const res = await fetch("/api/auth/register", {
         method: "POST",
@@ -30,34 +28,14 @@ export default function RegisterPage() {
         body: JSON.stringify(form),
       });
 
-      if (!res.ok) {
-        const contentType = res.headers.get("Content-Type");
-        if (!contentType?.includes("application/json")) {
-          const text = await res.text();
-          console.error("Ожидался JSON, но получен HTML:", text);
-          message.error("Сервер вернул неверный ответ");
-          return;
-        }
+      const data = await res.json();
+      if (!res.ok) return message.error(data.error || "Ошибка регистрации");
 
-        const data = await res.json();
-        message.error(data.error || "Ошибка регистрации");
-        return;
-      }
-
-      if (res.ok) {
-        message.success("Регистрация прошла успешно");
-        router.push("/login");
-      } else {
-        const data = await res.json();
-        message.error(data.error || "Ошибка регистрации");
-      }
-    } catch (error) {
-      console.error("Ошибка при регистрации:", error);
-
-      const errMessage =
-        error instanceof Error ? error.message : "Неизвестная ошибка";
-
-      message.error(`Ошибка сервера: ${errMessage}`);
+      message.success("Регистрация прошла успешно");
+      router.push("/login");
+    } catch (err) {
+      console.error("Ошибка:", err);
+      message.error("Ошибка сервера");
     }
   };
 
