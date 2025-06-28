@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { Input, Button, Select, message } from "antd";
 import { useRouter } from "next/navigation";
 
@@ -21,12 +21,28 @@ export default function RegisterPage() {
   };
 
   const handleSubmit = async () => {
+    console.log("message");
+    console.log("Отправка данных на сервер:", form);
     try {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
+
+      if (!res.ok) {
+        const contentType = res.headers.get("Content-Type");
+        if (!contentType?.includes("application/json")) {
+          const text = await res.text();
+          console.error("Ожидался JSON, но получен HTML:", text);
+          message.error("Сервер вернул неверный ответ");
+          return;
+        }
+
+        const data = await res.json();
+        message.error(data.error || "Ошибка регистрации");
+        return;
+      }
 
       if (res.ok) {
         message.success("Регистрация прошла успешно");
@@ -35,8 +51,13 @@ export default function RegisterPage() {
         const data = await res.json();
         message.error(data.error || "Ошибка регистрации");
       }
-    } catch {
-      message.error("Ошибка сервера");
+    } catch (error) {
+      console.error("Ошибка при регистрации:", error);
+
+      const errMessage =
+        error instanceof Error ? error.message : "Неизвестная ошибка";
+
+      message.error(`Ошибка сервера: ${errMessage}`);
     }
   };
 

@@ -8,4 +8,4 @@ export const registerSchema = z.object({
   role: z.enum(["MANAGER", "DRIVER"]),
 });
 
-export type RegisterInput = z.infer<typeof registerSchema>;
+export type RegisterSchema = z.infer<typeof registerSchema>;

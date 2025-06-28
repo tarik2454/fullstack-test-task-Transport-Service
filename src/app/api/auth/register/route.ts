@@ -1,11 +1,15 @@
 import { hash } from "bcryptjs";
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/prisma";
 import { registerSchema } from "@/lib/zodSchemas";
 
 export async function POST(req: Request) {
   const body = await req.json();
+
+  console.log("Полученные данные от клиента:", body);
+
   const parse = registerSchema.safeParse(body);
+
   if (!parse.success)
     return NextResponse.json({ error: "Invalid data" }, { status: 400 });
 
@@ -13,7 +17,7 @@ export async function POST(req: Request) {
 
   const hashed = await hash(password, 10);
 
-  const user = await prisma.user.create({
+  const user = await db.user.create({
     data: { email, password: hashed, firstName, lastName, role },
   });
 
