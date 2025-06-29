@@ -10,18 +10,18 @@ interface Order {
   status: string;
 }
 
+interface Client {
+  id: string;
+  name: string;
+}
+
+interface Warehouse {
+  id: string;
+  name: string;
+}
+
 export default function OrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
-  interface Client {
-    id: string;
-    name: string;
-  }
-
-  interface Warehouse {
-    id: string;
-    name: string;
-  }
-
   const [clients, setClients] = useState<Client[]>([]);
   const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
   const [loading, setLoading] = useState(false);
@@ -37,23 +37,8 @@ export default function OrdersPage() {
         fetch("/api/warehouses"),
       ]);
 
-      // Проверка ответов
-      if (!ordersRes.ok) {
-        const text = await ordersRes.text();
-        console.error("Ошибка /api/orders:", ordersRes.status, text);
-        setLoading(false);
-        return;
-      }
-      if (!clientsRes.ok) {
-        const text = await clientsRes.text();
-        console.error("Ошибка /api/clients:", clientsRes.status, text);
-        setLoading(false);
-        return;
-      }
-      if (!warehousesRes.ok) {
-        const text = await warehousesRes.text();
-        console.error("Ошибка /api/warehouses:", warehousesRes.status, text);
-        setLoading(false);
+      if (!ordersRes.ok || !clientsRes.ok || !warehousesRes.ok) {
+        message.error("Ошибка при загрузке данных");
         return;
       }
 
@@ -87,6 +72,8 @@ export default function OrdersPage() {
       fetchAll();
       setIsModalOpen(false);
       form.resetFields();
+    } else {
+      message.error("Ошибка при создании заказа");
     }
   };
 
@@ -94,7 +81,9 @@ export default function OrdersPage() {
     <div>
       <div className="flex justify-between mb-4">
         <h2 className="text-xl font-semibold">Заказы</h2>
-        <Button onClick={() => setIsModalOpen(true)}>Создать</Button>
+        <Button type="primary" onClick={() => setIsModalOpen(true)}>
+          Создать
+        </Button>
       </div>
 
       <Table
@@ -102,9 +91,22 @@ export default function OrdersPage() {
         dataSource={orders}
         loading={loading}
         columns={[
-          { title: "Клиент", dataIndex: "clientId" },
-          { title: "Склад", dataIndex: "warehouseId" },
-          { title: "Статус", dataIndex: "status" },
+          {
+            title: "Клиент",
+            dataIndex: "clientId",
+            render: (clientId: string) =>
+              clients.find((c) => c.id === clientId)?.name || "—",
+          },
+          {
+            title: "Склад",
+            dataIndex: "warehouseId",
+            render: (warehouseId: string) =>
+              warehouses.find((w) => w.id === warehouseId)?.name || "—",
+          },
+          {
+            title: "Статус",
+            dataIndex: "status",
+          },
         ]}
       />
 
@@ -121,22 +123,22 @@ export default function OrdersPage() {
           <Form.Item
             name="clientId"
             label="Клиент"
-            rules={[{ required: true }]}
+            rules={[{ required: true, message: "Выберите клиента" }]}
           >
-            {" "}
             <Select
+              placeholder="Выберите клиента"
               options={clients.map((c) => ({ label: c.name, value: c.id }))}
-            />{" "}
+            />
           </Form.Item>
           <Form.Item
             name="warehouseId"
             label="Склад"
-            rules={[{ required: true }]}
+            rules={[{ required: true, message: "Выберите склад" }]}
           >
-            {" "}
             <Select
+              placeholder="Выберите склад"
               options={warehouses.map((w) => ({ label: w.name, value: w.id }))}
-            />{" "}
+            />
           </Form.Item>
         </Form>
       </Modal>
