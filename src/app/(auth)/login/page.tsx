@@ -27,7 +27,7 @@ export default function LoginPage() {
         const { role } = await res.json();
         message.success("Успешный вход");
         router.push(
-          role === "MANAGER" ? "/dashboard/manager" : "/dashboard/driver"
+          role === "MANAGER" ? "dashboard/manager/clients" : "dashboard/driver"
         );
       } else {
         const data = await res.json();

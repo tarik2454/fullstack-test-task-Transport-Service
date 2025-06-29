@@ -16,7 +16,9 @@ export async function middleware(request: NextRequest) {
   if (token && isAuth) {
     const payload = await verifyToken(token);
     if (payload?.role === "MANAGER") {
-      return NextResponse.redirect(new URL("/dashboard/manager", request.url));
+      return NextResponse.redirect(
+        new URL("/dashboard/manager/orders", request.url)
+      );
     }
     if (payload?.role === "DRIVER") {
       return NextResponse.redirect(new URL("/dashboard/driver", request.url));
