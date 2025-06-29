@@ -22,12 +22,12 @@ export default function WarehousesPage() {
       const res = await fetch("/api/warehouses");
 
       if (!res.ok) {
-        const errorText = await res.text(); // можно прочитать один раз
+        const errorText = await res.text();
         console.error("Ошибка /api/warehouses:", res.status, errorText);
         return;
       }
 
-      const data = await res.json(); // читаем только если res.ok
+      const data = await res.json();
       setWarehouses(data);
     } catch (err) {
       console.error("Сетевой сбой или другая ошибка:", err);
@@ -69,10 +69,15 @@ export default function WarehousesPage() {
 
   const handleDelete = async (id: string) => {
     const res = await fetch(`/api/warehouses/${id}`, { method: "DELETE" });
-    if (res.ok) {
-      message.success("Удалено");
-      fetchWarehouses();
+
+    if (!res.ok) {
+      const { error } = await res.json();
+      message.error(error);
+      return;
     }
+
+    message.success("Удалено");
+    fetchWarehouses();
   };
 
   return (
@@ -86,7 +91,15 @@ export default function WarehousesPage() {
         rowKey="id"
         dataSource={warehouses}
         loading={loading}
+        bordered
         columns={[
+          {
+            title: "#",
+            dataIndex: "index",
+            key: "index",
+            render: (_: unknown, __: Warehouse, index: number) => index + 1,
+            width: 50,
+          },
           { title: "Название", dataIndex: "name" },
           { title: "Адрес", dataIndex: "address" },
           {

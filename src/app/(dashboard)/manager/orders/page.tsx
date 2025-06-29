@@ -8,6 +8,7 @@ interface Order {
   warehouseId: string;
   clientId: string;
   status: string;
+  updatedAt: string;
 }
 
 interface Client {
@@ -26,6 +27,7 @@ export default function OrdersPage() {
   const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editing, setEditing] = useState<Order | null>(null);
   const [form] = Form.useForm();
 
   const fetchAll = async () => {
@@ -38,6 +40,8 @@ export default function OrdersPage() {
       ]);
 
       if (!ordersRes.ok || !clientsRes.ok || !warehousesRes.ok) {
+        const errorText = await ordersRes.text();
+        console.error("Ошибка при загрузке данных:", errorText);
         message.error("Ошибка при загрузке данных");
         return;
       }
@@ -46,11 +50,20 @@ export default function OrdersPage() {
       const clientsData = await clientsRes.json();
       const warehousesData = await warehousesRes.json();
 
-      setOrders(ordersData);
+      setOrders(
+        ordersData
+          .slice()
+          .sort(
+            (a: Order, b: Order) =>
+              new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+          )
+      );
+
       setClients(clientsData);
       setWarehouses(warehousesData);
     } catch (error) {
       console.error("Ошибка при fetchAll:", error);
+      message.error("Ошибка при загрузке данных");
     } finally {
       setLoading(false);
     }
@@ -61,20 +74,45 @@ export default function OrdersPage() {
   }, []);
 
   const handleSave = async () => {
-    const values = await form.validateFields();
-    const res = await fetch("/api/orders", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(values),
-    });
-    if (res.ok) {
-      message.success("Заказ создан");
+    try {
+      const values = await form.validateFields();
+
+      const method = editing ? "PUT" : "POST";
+      const url = editing ? `/api/orders/${editing.id}` : "/api/orders";
+
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      });
+
+      if (!res.ok) {
+        const { error } = await res.json();
+        message.error(error || "Ошибка при сохранении заказа");
+        return;
+      }
+
+      message.success(editing ? "Заказ обновлен" : "Заказ создан");
       fetchAll();
       setIsModalOpen(false);
       form.resetFields();
-    } else {
-      message.error("Ошибка при создании заказа");
+      setEditing(null);
+    } catch (err) {
+      console.warn("Валидация не прошла", err);
     }
+  };
+
+  const handleDelete = async (id: string) => {
+    const res = await fetch(`/api/orders/${id}`, { method: "DELETE" });
+
+    if (!res.ok) {
+      const { error } = await res.json();
+      message.error(error || "Ошибка при удалении заказа");
+      return;
+    }
+
+    message.success("Заказ удалён");
+    fetchAll();
   };
 
   return (
@@ -90,7 +128,15 @@ export default function OrdersPage() {
         rowKey="id"
         dataSource={orders}
         loading={loading}
+        bordered
         columns={[
+          {
+            title: "#",
+            dataIndex: "index",
+            key: "index",
+            render: (_: unknown, __: Order, index: number) => index + 1,
+            width: 50,
+          },
           {
             title: "Клиент",
             dataIndex: "clientId",
@@ -107,16 +153,41 @@ export default function OrdersPage() {
             title: "Статус",
             dataIndex: "status",
           },
+          {
+            title: "Действия",
+            render: (_, record: Order) => (
+              <div className="flex gap-2">
+                <Button
+                  size="small"
+                  onClick={() => {
+                    form.setFieldsValue(record);
+                    setEditing(record);
+                    setIsModalOpen(true);
+                  }}
+                >
+                  Изменить
+                </Button>
+                <Button
+                  size="small"
+                  danger
+                  onClick={() => handleDelete(record.id)}
+                >
+                  Удалить
+                </Button>
+              </div>
+            ),
+          },
         ]}
       />
 
       <Modal
-        title="Создать заказ"
+        title={editing ? "Изменить заказ" : "Создать заказ"}
         open={isModalOpen}
         onOk={handleSave}
         onCancel={() => {
           setIsModalOpen(false);
           form.resetFields();
+          setEditing(null);
         }}
       >
         <Form layout="vertical" form={form}>
@@ -138,6 +209,20 @@ export default function OrdersPage() {
             <Select
               placeholder="Выберите склад"
               options={warehouses.map((w) => ({ label: w.name, value: w.id }))}
+            />
+          </Form.Item>
+          <Form.Item
+            name="status"
+            label="Статус"
+            rules={[{ required: true, message: "Выберите статус" }]}
+          >
+            <Select
+              placeholder="Выберите статус"
+              options={[
+                { label: "NEW", value: "NEW" },
+                { label: "IN_PROGRESS", value: "IN_PROGRESS" },
+                { label: "COMPLETED", value: "COMPLETED" },
+              ]}
             />
           </Form.Item>
         </Form>

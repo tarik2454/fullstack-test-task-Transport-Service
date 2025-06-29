@@ -47,7 +47,15 @@ export default function DriverOrdersPage() {
         rowKey="id"
         dataSource={orders}
         loading={loading}
+        bordered
         columns={[
+          {
+            title: "#",
+            dataIndex: "index",
+            key: "index",
+            render: (_: unknown, __: Order, index: number) => index + 1,
+            width: 50,
+          },
           { title: "Клиент", dataIndex: ["client", "name"] },
           { title: "Склад", dataIndex: ["warehouse", "name"] },
           { title: "Статус", dataIndex: "status" },

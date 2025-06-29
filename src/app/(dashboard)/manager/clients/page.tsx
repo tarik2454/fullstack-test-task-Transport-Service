@@ -53,10 +53,15 @@ export default function ClientsPage() {
 
   const handleDelete = async (id: string) => {
     const res = await fetch(`/api/clients/${id}`, { method: "DELETE" });
-    if (res.ok) {
-      message.success("Удалено");
-      fetchClients();
+
+    if (!res.ok) {
+      const { error } = await res.json();
+      message.error(error);
+      return;
     }
+
+    message.success("Удалено");
+    fetchClients();
   };
 
   return (
@@ -70,7 +75,15 @@ export default function ClientsPage() {
         rowKey="id"
         dataSource={clients}
         loading={loading}
+        bordered
         columns={[
+          {
+            title: "#",
+            dataIndex: "index",
+            key: "index",
+            render: (_: unknown, __: Client, index: number) => index + 1,
+            width: 50,
+          },
           { title: "Имя", dataIndex: "name" },
           { title: "Адрес", dataIndex: "address" },
           { title: "Телефон", dataIndex: "phone" },
