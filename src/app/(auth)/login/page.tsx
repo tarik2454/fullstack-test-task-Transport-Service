@@ -28,11 +28,7 @@ export default function LoginPage() {
       if (res.ok) {
         const { role } = await res.json();
         message.success("Успешный вход");
-        router.push(
-          role === "MANAGER"
-            ? "dashboard/manager/clients"
-            : "dashboard/driver/orders"
-        );
+        router.push(role === "MANAGER" ? "/manager/orders" : "/driver/orders");
       } else {
         const data = await res.json();
         message.error(data.error || "Ошибка входа");

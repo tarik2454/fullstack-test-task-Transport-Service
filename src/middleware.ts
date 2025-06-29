@@ -4,10 +4,12 @@ import { verifyToken } from "@/lib/auth";
 
 export async function middleware(request: NextRequest) {
   const token = request.cookies.get("token")?.value;
-  const isProtected = request.nextUrl.pathname.startsWith("/dashboard");
-  const isAuth =
-    request.nextUrl.pathname === "/login" ||
-    request.nextUrl.pathname === "/register";
+  const pathname = request.nextUrl.pathname;
+
+  const isProtected =
+    pathname.startsWith("/manager") || pathname.startsWith("/driver");
+
+  const isAuth = pathname === "/login" || pathname === "/register";
 
   if (!token && isProtected) {
     return NextResponse.redirect(new URL("/login", request.url));
@@ -15,13 +17,13 @@ export async function middleware(request: NextRequest) {
 
   if (token && isAuth) {
     const payload = await verifyToken(token);
+
     if (payload?.role === "MANAGER") {
-      return NextResponse.redirect(
-        new URL("/dashboard/manager/orders", request.url)
-      );
+      return NextResponse.redirect(new URL("/manager/orders", request.url));
     }
+
     if (payload?.role === "DRIVER") {
-      return NextResponse.redirect(new URL("/dashboard/driver", request.url));
+      return NextResponse.redirect(new URL("/driver/orders", request.url));
     }
   }
 
@@ -29,5 +31,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/login", "/register"],
+  matcher: ["/manager/:path*", "/driver", "/login", "/register"],
 };
