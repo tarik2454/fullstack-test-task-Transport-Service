@@ -3,8 +3,26 @@ import { db } from "@/lib/prisma";
 import { withAuth } from "@/lib/withAuth";
 
 export async function GET() {
-  const warehouses = await db.warehouse.findMany();
-  return NextResponse.json(warehouses);
+  try {
+    const user = (await withAuth("MANAGER")) as User | null;
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const managerId: string = user.id;
+
+    const warehouses = await db.warehouse.findMany({
+      where: { managerId },
+    });
+
+    return NextResponse.json(warehouses);
+  } catch (error) {
+    console.error("GET /api/warehouses error:", error);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
+  }
 }
 
 interface User {

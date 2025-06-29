@@ -18,10 +18,22 @@ export default function WarehousesPage() {
 
   const fetchWarehouses = async () => {
     setLoading(true);
-    const res = await fetch("/api/warehouses");
-    const data = await res.json();
-    setWarehouses(data);
-    setLoading(false);
+    try {
+      const res = await fetch("/api/warehouses");
+
+      if (!res.ok) {
+        const errorText = await res.text(); // можно прочитать один раз
+        console.error("Ошибка /api/warehouses:", res.status, errorText);
+        return;
+      }
+
+      const data = await res.json(); // читаем только если res.ok
+      setWarehouses(data);
+    } catch (err) {
+      console.error("Сетевой сбой или другая ошибка:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
