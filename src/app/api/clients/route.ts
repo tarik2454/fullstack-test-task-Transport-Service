@@ -1,11 +1,12 @@
 import { withAuth } from "@/lib/withAuth";
 import { NextRequest, NextResponse } from "next/server";
+import { db } from "@/lib/prisma";
 
 export async function GET() {
-  const user = await withAuth("MANAGER");
+  const user = (await withAuth("MANAGER")) as { id: string } | null;
   if (!user)
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  const clients = await prisma.client.findMany({
+  const clients = await db.client.findMany({
     where: { managerId: user.id },
   });
   return NextResponse.json(clients);
@@ -16,7 +17,7 @@ export async function POST(req: NextRequest) {
   if (!user)
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const data = await req.json();
-  const client = await prisma.client.create({
+  const client = await db.client.create({
     data: { ...data, managerId: user.id },
   });
   return NextResponse.json(client);

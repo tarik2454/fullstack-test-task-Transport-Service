@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
+import { db } from "@/lib/prisma";
 
 export async function PUT(
   req: NextRequest,
   { params }: { params: { id: string } }
 ) {
   const data = await req.json();
-  const warehouse = await prisma.warehouse.update({
+  const warehouse = await db.warehouse.update({
     where: { id: params.id },
     data,
   });
@@ -16,6 +17,6 @@ export async function DELETE(
   _: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  await prisma.warehouse.delete({ where: { id: params.id } });
+  await db.warehouse.delete({ where: { id: params.id } });
   return NextResponse.json({ success: true });
 }

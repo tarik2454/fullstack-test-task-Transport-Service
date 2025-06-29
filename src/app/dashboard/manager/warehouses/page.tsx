@@ -29,24 +29,29 @@ export default function WarehousesPage() {
   }, []);
 
   const handleSave = async () => {
-    const values = await form.validateFields();
-    const method = editing ? "PUT" : "POST";
-    const url = editing ? `/api/warehouses/${editing.id}` : "/api/warehouses";
+    try {
+      const values = await form.validateFields();
 
-    const res = await fetch(url, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(values),
-    });
+      const method = editing ? "PUT" : "POST";
+      const url = editing ? `/api/warehouses/${editing.id}` : "/api/warehouses";
 
-    if (res.ok) {
-      message.success("Сохранено");
-      fetchWarehouses();
-      setIsModalOpen(false);
-      form.resetFields();
-      setEditing(null);
-    } else {
-      message.error("Ошибка сохранения");
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      });
+
+      if (res.ok) {
+        message.success("Сохранено");
+        fetchWarehouses();
+        setIsModalOpen(false);
+        form.resetFields();
+        setEditing(null);
+      } else {
+        message.error("Ошибка сохранения");
+      }
+    } catch (err) {
+      console.warn("Валидация не прошла", err);
     }
   };
 
@@ -111,12 +116,10 @@ export default function WarehousesPage() {
       >
         <Form layout="vertical" form={form}>
           <Form.Item name="name" label="Название" rules={[{ required: true }]}>
-            {" "}
-            <Input />{" "}
+            <Input />
           </Form.Item>
           <Form.Item name="address" label="Адрес" rules={[{ required: true }]}>
-            {" "}
-            <Input />{" "}
+            <Input />
           </Form.Item>
         </Form>
       </Modal>

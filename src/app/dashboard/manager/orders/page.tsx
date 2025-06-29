@@ -30,15 +30,45 @@ export default function OrdersPage() {
 
   const fetchAll = async () => {
     setLoading(true);
-    const [ordersRes, clientsRes, warehousesRes] = await Promise.all([
-      fetch("/api/orders"),
-      fetch("/api/clients"),
-      fetch("/api/warehouses"),
-    ]);
-    setOrders(await ordersRes.json());
-    setClients(await clientsRes.json());
-    setWarehouses(await warehousesRes.json());
-    setLoading(false);
+    try {
+      const [ordersRes, clientsRes, warehousesRes] = await Promise.all([
+        fetch("/api/orders"),
+        fetch("/api/clients"),
+        fetch("/api/warehouses"),
+      ]);
+
+      // Проверка ответов
+      if (!ordersRes.ok) {
+        const text = await ordersRes.text();
+        console.error("Ошибка /api/orders:", ordersRes.status, text);
+        setLoading(false);
+        return;
+      }
+      if (!clientsRes.ok) {
+        const text = await clientsRes.text();
+        console.error("Ошибка /api/clients:", clientsRes.status, text);
+        setLoading(false);
+        return;
+      }
+      if (!warehousesRes.ok) {
+        const text = await warehousesRes.text();
+        console.error("Ошибка /api/warehouses:", warehousesRes.status, text);
+        setLoading(false);
+        return;
+      }
+
+      const ordersData = await ordersRes.json();
+      const clientsData = await clientsRes.json();
+      const warehousesData = await warehousesRes.json();
+
+      setOrders(ordersData);
+      setClients(clientsData);
+      setWarehouses(warehousesData);
+    } catch (error) {
+      console.error("Ошибка при fetchAll:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {

@@ -1,7 +1,7 @@
 "use client";
 
+import { Button, Form, Input, message, Modal, Table } from "antd";
 import { useState, useEffect } from "react";
-import { Table, Button, Modal, Form, Input, message } from "antd";
 
 interface Client {
   id: string;
@@ -113,16 +113,13 @@ export default function ClientsPage() {
       >
         <Form layout="vertical" form={form}>
           <Form.Item name="name" label="Имя" rules={[{ required: true }]}>
-            {" "}
-            <Input />{" "}
+            <Input />
           </Form.Item>
           <Form.Item name="address" label="Адрес" rules={[{ required: true }]}>
-            {" "}
-            <Input />{" "}
+            <Input />
           </Form.Item>
           <Form.Item name="phone" label="Телефон" rules={[{ required: true }]}>
-            {" "}
-            <Input />{" "}
+            <Input />
           </Form.Item>
         </Form>
       </Modal>

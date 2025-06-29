@@ -6,8 +6,6 @@ import { registerSchema } from "@/lib/zodSchemas";
 export async function POST(req: Request) {
   const body = await req.json();
 
-  console.log("Полученные данные от клиента:", body);
-
   const parse = registerSchema.safeParse(body);
 
   if (!parse.success)

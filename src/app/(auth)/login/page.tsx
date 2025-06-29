@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Input, Button, message } from "antd";
+import { message } from "antd";
 import { useRouter } from "next/navigation";
+import Button from "antd/es/button";
+import Input from "antd/es/input";
 
 export default function LoginPage() {
   const [form, setForm] = useState({
