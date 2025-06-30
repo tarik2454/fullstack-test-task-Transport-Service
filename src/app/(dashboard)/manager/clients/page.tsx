@@ -1,5 +1,6 @@
 "use client";
 
+import { handleServerErrors } from "@/utils/handleFormErrors";
 import { Button, Form, Input, message, Modal, Table } from "antd";
 import { useState, useEffect } from "react";
 
@@ -54,15 +55,17 @@ export default function ClientsPage() {
       body: JSON.stringify(values),
     });
 
-    if (res.ok) {
-      message.success("Сохранено");
-      fetchClients();
-      setIsModalOpen(false);
-      form.resetFields();
-      setEditing(null);
-    } else {
-      message.error("Ошибка сохранения");
+    if (!res.ok) {
+      const { error } = await res.json();
+      handleServerErrors(error, form);
+      return;
     }
+
+    message.success("Successfully saved");
+    fetchClients();
+    setIsModalOpen(false);
+    form.resetFields();
+    setEditing(null);
   };
 
   const handleDelete = async (id: string) => {
@@ -74,7 +77,7 @@ export default function ClientsPage() {
       return;
     }
 
-    message.success("Удалено");
+    message.success("Successfully deleted");
     fetchClients();
   };
 

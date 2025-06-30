@@ -10,13 +10,23 @@ export const registerSchema = z.object({
 export type RegisterSchema = z.infer<typeof registerSchema>;
 
 export const clientCreateSchema = z.object({
-  name: z.string().min(1),
-  address: z.string().min(1),
-  phone: z.string().min(1),
+  name: z.string().min(2),
+  address: z.string().min(2),
+  phone: z.string().min(2),
 });
 
 export const clientUpdateSchema = z.object({
-  name: z.string().min(1).optional(),
-  address: z.string().min(1).optional(),
-  phone: z.string().min(1).optional(),
+  name: z.string().min(2).optional(),
+  address: z.string().min(2).optional(),
+  phone: z.string().min(2).optional(),
 });
+
+export function formatZodErrors(error: z.ZodError) {
+  const errors: Record<string, string> = {};
+  error.errors.forEach(({ path, message }) => {
+    if (path.length > 0) {
+      errors[path[0]] = message;
+    }
+  });
+  return errors;
+}

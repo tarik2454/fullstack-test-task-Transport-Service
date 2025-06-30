@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 import { errorResponse } from "@/lib/apiResponse";
+import { clientUpdateSchema, formatZodErrors } from "@/lib/zodSchemas";
 
 export async function PUT(
   req: NextRequest,
@@ -9,11 +10,16 @@ export async function PUT(
 ) {
   try {
     const { id } = await params;
-    const data = await req.json();
+    const body = await req.json();
+
+    const parseResult = clientUpdateSchema.safeParse(body);
+    if (!parseResult.success) {
+      return errorResponse(formatZodErrors(parseResult.error), 400);
+    }
 
     const client = await db.client.update({
       where: { id: id },
-      data,
+      data: parseResult.data,
     });
     return NextResponse.json(client);
   } catch {
