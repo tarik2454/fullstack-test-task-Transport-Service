@@ -5,7 +5,7 @@ import { errorResponse } from "@/lib/apiResponse";
 
 export async function GET() {
   try {
-    const user = (await withAuth("MANAGER")) as { id: string } | null;
+    const user = await withAuth("MANAGER");
     if (!user) return errorResponse("Unauthorized", 401);
 
     const clients = await db.client.findMany({

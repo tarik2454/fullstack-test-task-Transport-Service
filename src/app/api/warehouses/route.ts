@@ -3,14 +3,9 @@ import { db } from "@/lib/prisma";
 import { withAuth } from "@/lib/withAuth";
 import { errorResponse } from "@/lib/apiResponse";
 
-interface User {
-  id: string;
-  role: string;
-}
-
 export async function GET() {
   try {
-    const user = (await withAuth("MANAGER")) as User | null;
+    const user = await withAuth("MANAGER");
     if (!user) return errorResponse("Unauthorized", 401);
 
     const warehouses = await db.warehouse.findMany({
@@ -26,7 +21,7 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   try {
-    const user = (await withAuth("MANAGER")) as User | null;
+    const user = await withAuth("MANAGER");
     if (!user) return errorResponse("Unauthorized", 401);
 
     const data = await req.json();
