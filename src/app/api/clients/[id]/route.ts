@@ -6,10 +6,10 @@ import { errorResponse } from "@/lib/apiResponse";
 
 export async function PUT(
   req: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   try {
-    const { id } = await context.params;
+    const { id } = params;
     const data = await req.json();
 
     const client = await db.client.update({
@@ -24,10 +24,10 @@ export async function PUT(
 
 export async function DELETE(
   _: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   try {
-    const { id } = await context.params;
+    const { id } = params;
     await db.client.delete({ where: { id: id } });
     return NextResponse.json({ success: true });
   } catch (error) {
