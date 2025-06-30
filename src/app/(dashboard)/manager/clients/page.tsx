@@ -19,10 +19,24 @@ export default function ClientsPage() {
 
   const fetchClients = async () => {
     setLoading(true);
-    const res = await fetch("/api/clients");
-    const data = await res.json();
-    setClients(data);
-    setLoading(false);
+    try {
+      const res = await fetch("/api/clients");
+      const data = await res.json();
+
+      if (Array.isArray(data)) {
+        setClients(data);
+      } else {
+        console.error("Ожидался массив, но пришло:", data);
+        message.error("Ошибка загрузки клиентов");
+        setClients([]);
+      }
+    } catch (err) {
+      console.error("Ошибка запроса:", err);
+      message.error("Ошибка загрузки клиентов");
+      setClients([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -72,8 +86,8 @@ export default function ClientsPage() {
       </div>
 
       <Table
-        rowKey="id"
         dataSource={clients}
+        rowKey="id"
         loading={loading}
         bordered
         columns={[
