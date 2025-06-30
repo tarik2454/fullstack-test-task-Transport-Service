@@ -5,9 +5,9 @@ import { errorResponse } from "@/lib/apiResponse";
 
 export async function PUT(
   req: NextRequest,
-  context: { params: Record<string, string> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const id = context.params.id;
+  const { id } = await params;
   const data = await req.json();
 
   try {
@@ -23,9 +23,9 @@ export async function PUT(
 
 export async function DELETE(
   req: NextRequest,
-  context: { params: Record<string, string> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const id = context.params.id;
+  const { id } = await params;
 
   try {
     await db.warehouse.delete({ where: { id } });

@@ -7,9 +7,10 @@ import { verifyToken } from "@/lib/auth";
 
 export async function PATCH(
   req: NextRequest,
-  context: { params: Record<string, string> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const { status }: { status: string } = await req.json();
 
     if (!Object.values(OrderStatus).includes(status as OrderStatus)) {
@@ -17,7 +18,7 @@ export async function PATCH(
     }
 
     const currentOrder = await db.order.findUnique({
-      where: { id: context.params.id },
+      where: { id: id },
     });
     if (!currentOrder) {
       return errorResponse("Заказ не найден", 404);
@@ -45,7 +46,7 @@ export async function PATCH(
     };
 
     const updatedOrder = await db.order.update({
-      where: { id: context.params.id },
+      where: { id: id },
       data: dataToUpdate,
       include: { warehouse: true, client: true },
     });
