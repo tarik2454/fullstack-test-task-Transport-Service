@@ -9,9 +9,11 @@ export async function PUT(
   context: { params: { id: string } }
 ) {
   try {
+    const id = context.params.id;
     const data = await req.json();
+
     const client = await db.client.update({
-      where: { id: context.params.id },
+      where: { id: id },
       data,
     });
     return NextResponse.json(client);
@@ -22,10 +24,11 @@ export async function PUT(
 
 export async function DELETE(
   _: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
   try {
-    await db.client.delete({ where: { id: params.id } });
+    const id = context.params.id;
+    await db.client.delete({ where: { id: id } });
     return NextResponse.json({ success: true });
   } catch (error) {
     if (
