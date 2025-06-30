@@ -5,7 +5,7 @@ import { errorResponse } from "@/lib/apiResponse";
 
 export async function PUT(
   req: NextRequest,
-  context: { params: { id: string } }
+  context: { params: Record<string, string> }
 ) {
   const id = context.params.id;
   const data = await req.json();
@@ -23,7 +23,7 @@ export async function PUT(
 
 export async function DELETE(
   req: NextRequest,
-  context: { params: { id: string } }
+  context: { params: Record<string, string> }
 ) {
   const id = context.params.id;
 

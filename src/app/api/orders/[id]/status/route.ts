@@ -7,7 +7,7 @@ import { verifyToken } from "@/lib/auth";
 
 export async function PATCH(
   req: NextRequest,
-  context: { params: { id: string } }
+  context: { params: Record<string, string> }
 ) {
   try {
     const { status }: { status: string } = await req.json();
