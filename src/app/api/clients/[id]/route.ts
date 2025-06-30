@@ -6,7 +6,7 @@ import { errorResponse } from "@/lib/apiResponse";
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: Record<string, string> }
+  { params }: { params: { id: string } }
 ) {
   try {
     const id = params.id;
@@ -24,7 +24,7 @@ export async function PUT(
 
 export async function DELETE(
   _: NextRequest,
-  { params }: { params: Record<string, string> }
+  { params }: { params: { id: string } }
 ) {
   try {
     const id = params.id;
