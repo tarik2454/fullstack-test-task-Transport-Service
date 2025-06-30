@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Table, Button, Modal, Form, Input, message } from "antd";
+import { handleServerErrors } from "@/utils/handleFormErrors";
 
 interface Warehouse {
   id: string;
@@ -53,18 +54,18 @@ export default function WarehousesPage() {
         body: JSON.stringify(values),
       });
 
-      if (res.ok) {
-        message.success("Сохранено");
-        fetchWarehouses();
-        setIsModalOpen(false);
-        form.resetFields();
-        setEditing(null);
-      } else {
-        message.error("Ошибка сохранения");
+      if (!res.ok) {
+        const { error } = await res.json();
+        handleServerErrors(error, form);
+        return;
       }
-    } catch (err) {
-      console.warn("Валидация не прошла", err);
-    }
+
+      message.success("Successfully saved");
+      fetchWarehouses();
+      setIsModalOpen(false);
+      form.resetFields();
+      setEditing(null);
+    } catch {}
   };
 
   const handleDelete = async (id: string) => {
@@ -76,7 +77,7 @@ export default function WarehousesPage() {
       return;
     }
 
-    message.success("Удалено");
+    message.success("Deleted");
     fetchWarehouses();
   };
 

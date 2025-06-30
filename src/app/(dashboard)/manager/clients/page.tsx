@@ -20,24 +20,18 @@ export default function ClientsPage() {
 
   const fetchClients = async () => {
     setLoading(true);
-    try {
-      const res = await fetch("/api/clients");
-      const data = await res.json();
 
-      if (Array.isArray(data)) {
-        setClients(data);
-      } else {
-        console.error("Ожидался массив, но пришло:", data);
-        message.error("Ошибка загрузки клиентов");
-        setClients([]);
-      }
-    } catch (err) {
-      console.error("Ошибка запроса:", err);
-      message.error("Ошибка загрузки клиентов");
-      setClients([]);
-    } finally {
-      setLoading(false);
+    const res = await fetch("/api/clients");
+
+    if (!res.ok) {
+      message.error("Download error");
+      return;
     }
+
+    const data = await res.json();
+
+    setClients(data);
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -45,27 +39,30 @@ export default function ClientsPage() {
   }, []);
 
   const handleSave = async () => {
-    const values = await form.validateFields();
-    const method = editing ? "PUT" : "POST";
-    const url = editing ? `/api/clients/${editing.id}` : "/api/clients";
+    try {
+      const values = await form.validateFields();
 
-    const res = await fetch(url, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(values),
-    });
+      const method = editing ? "PUT" : "POST";
+      const url = editing ? `/api/clients/${editing.id}` : "/api/clients";
 
-    if (!res.ok) {
-      const { error } = await res.json();
-      handleServerErrors(error, form);
-      return;
-    }
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      });
 
-    message.success("Successfully saved");
-    fetchClients();
-    setIsModalOpen(false);
-    form.resetFields();
-    setEditing(null);
+      if (!res.ok) {
+        const { error } = await res.json();
+        handleServerErrors(error, form);
+        return;
+      }
+
+      message.success("Successfully saved");
+      fetchClients();
+      setIsModalOpen(false);
+      form.resetFields();
+      setEditing(null);
+    } catch {}
   };
 
   const handleDelete = async (id: string) => {
@@ -77,15 +74,15 @@ export default function ClientsPage() {
       return;
     }
 
-    message.success("Successfully deleted");
+    message.success("Deleted");
     fetchClients();
   };
 
   return (
     <div>
       <div className="flex justify-between mb-4">
-        <h2 className="text-xl font-semibold">Клиенты</h2>
-        <Button onClick={() => setIsModalOpen(true)}>Добавить</Button>
+        <h2 className="text-xl font-semibold">Clients</h2>
+        <Button onClick={() => setIsModalOpen(true)}>Add client</Button>
       </div>
 
       <Table
@@ -101,11 +98,11 @@ export default function ClientsPage() {
             render: (_: unknown, __: Client, index: number) => index + 1,
             width: 50,
           },
-          { title: "Имя", dataIndex: "name" },
-          { title: "Адрес", dataIndex: "address" },
-          { title: "Телефон", dataIndex: "phone" },
+          { title: "Name", dataIndex: "name" },
+          { title: "Address", dataIndex: "address" },
+          { title: "Phone", dataIndex: "phone" },
           {
-            title: "Действия",
+            title: "Actions",
             render: (_, record) => (
               <div className="flex gap-2">
                 <Button
@@ -116,14 +113,14 @@ export default function ClientsPage() {
                     setIsModalOpen(true);
                   }}
                 >
-                  Изменить
+                  Change
                 </Button>
                 <Button
                   size="small"
                   danger
                   onClick={() => handleDelete(record.id)}
                 >
-                  Удалить
+                  Delete
                 </Button>
               </div>
             ),
@@ -132,7 +129,7 @@ export default function ClientsPage() {
       />
 
       <Modal
-        title={editing ? "Изменить клиента" : "Добавить клиента"}
+        title={editing ? "Change client" : "Add client"}
         open={isModalOpen}
         onOk={handleSave}
         onCancel={() => {
@@ -142,13 +139,17 @@ export default function ClientsPage() {
         }}
       >
         <Form layout="vertical" form={form}>
-          <Form.Item name="name" label="Имя" rules={[{ required: true }]}>
+          <Form.Item name="name" label="Name" rules={[{ required: true }]}>
             <Input />
           </Form.Item>
-          <Form.Item name="address" label="Адрес" rules={[{ required: true }]}>
+          <Form.Item
+            name="address"
+            label="Address"
+            rules={[{ required: true }]}
+          >
             <Input />
           </Form.Item>
-          <Form.Item name="phone" label="Телефон" rules={[{ required: true }]}>
+          <Form.Item name="phone" label="Phone" rules={[{ required: true }]}>
             <Input />
           </Form.Item>
         </Form>

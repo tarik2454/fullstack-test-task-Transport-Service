@@ -21,6 +21,11 @@ export const clientUpdateSchema = z.object({
   phone: z.string().min(2).optional(),
 });
 
+export const warehouseUpdateSchema = z.object({
+  name: z.string().min(2).optional(),
+  address: z.string().min(2).optional(),
+});
+
 export function formatZodErrors(error: z.ZodError) {
   const errors: Record<string, string> = {};
   error.errors.forEach(({ path, message }) => {

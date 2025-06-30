@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 import { errorResponse } from "@/lib/apiResponse";
+import { formatZodErrors, warehouseUpdateSchema } from "@/lib/zodSchemas";
 
 export async function PUT(
   req: NextRequest,
@@ -9,6 +10,11 @@ export async function PUT(
 ) {
   const { id } = await params;
   const data = await req.json();
+
+  const parseResult = warehouseUpdateSchema.safeParse(data);
+  if (!parseResult.success) {
+    return errorResponse(formatZodErrors(parseResult.error), 400);
+  }
 
   try {
     const warehouse = await db.warehouse.update({
