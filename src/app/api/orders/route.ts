@@ -11,7 +11,13 @@ export async function GET() {
     }
     const managerId = (user as { id: string }).id;
 
-    const orders = await db.order.findMany({ where: { managerId } });
+    const orders = await db.order.findMany({
+      where: { managerId },
+      include: {
+        client: true,
+        warehouse: true,
+      },
+    });
 
     return NextResponse.json(orders);
   } catch {
@@ -25,10 +31,15 @@ export async function POST(req: NextRequest) {
     if (!user) {
       return errorResponse("Unauthorized", 401);
     }
-    const data = await req.json();
+
+    const { id: managerId } = user as { id: string };
+    const body = await req.json();
 
     const order = await db.order.create({
-      data: { ...data, managerId: (user as { id: string }).id },
+      data: {
+        ...body,
+        managerId,
+      },
     });
 
     return NextResponse.json(order);

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Table, Button, message } from "antd";
+import { Table, message, Select } from "antd";
 
 interface Order {
   id: string;
@@ -9,6 +9,13 @@ interface Order {
   client: { name: string };
   status: string;
 }
+
+const statusOptions = [
+  { label: "NEW", value: "NEW" },
+  { label: "ASSIGNED", value: "ASSIGNED" },
+  { label: "IN_PROGRESS", value: "IN_PROGRESS" },
+  { label: "COMPLETED", value: "COMPLETED" },
+];
 
 export default function DriverOrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -32,12 +39,14 @@ export default function DriverOrdersPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status }),
     });
-    if (res.ok) {
-      message.success("Статус обновлен");
-      fetchOrders();
-    } else {
-      message.error("Ошибка");
+
+    if (!res.ok) {
+      const { error } = await res.json();
+      message.error(error || "Ошибка при обновлении заказа");
     }
+
+    message.success("Статус заказа обновлен");
+    fetchOrders();
   };
 
   return (
@@ -45,7 +54,7 @@ export default function DriverOrdersPage() {
       <h2 className="text-xl font-semibold mb-4">Доступные и текущие заказы</h2>
       <Table
         rowKey="id"
-        dataSource={orders}
+        dataSource={Array.isArray(orders) ? orders : []}
         loading={loading}
         bordered
         columns={[
@@ -58,46 +67,19 @@ export default function DriverOrdersPage() {
           },
           { title: "Клиент", dataIndex: ["client", "name"] },
           { title: "Склад", dataIndex: ["warehouse", "name"] },
-          { title: "Статус", dataIndex: "status" },
           {
-            title: "Действия",
-            render: (_, record: Order) => {
-              switch (record.status) {
-                case "NEW":
-                  return (
-                    <Button onClick={() => updateStatus(record.id, "ASSIGNED")}>
-                      Принять
-                    </Button>
-                  );
-                case "ASSIGNED":
-                  return (
-                    <div className="flex gap-2">
-                      <Button
-                        onClick={() => updateStatus(record.id, "IN_PROGRESS")}
-                      >
-                        В процессе
-                      </Button>
-                      <Button
-                        danger
-                        onClick={() => updateStatus(record.id, "NEW")}
-                      >
-                        Отклонить
-                      </Button>
-                    </div>
-                  );
-                case "IN_PROGRESS":
-                  return (
-                    <Button
-                      type="primary"
-                      onClick={() => updateStatus(record.id, "COMPLETED")}
-                    >
-                      Завершить
-                    </Button>
-                  );
-                case "COMPLETED":
-                  return <span className="text-green-600">Выполнен</span>;
-              }
-            },
+            title: "Статус",
+            dataIndex: "status",
+            render: (status: string, record: Order) => (
+              <Select
+                value={status}
+                onChange={(value) => updateStatus(record.id, value)}
+                options={statusOptions}
+                disabled={status === "COMPLETED"}
+                size="small"
+                style={{ width: 160 }}
+              />
+            ),
           },
         ]}
       />

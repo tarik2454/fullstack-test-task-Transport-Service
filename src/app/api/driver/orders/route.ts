@@ -27,22 +27,20 @@ export async function GET() {
 
     const orders = await db.order.findMany({
       where: {
-        OR: [
-          { status: "NEW" },
-          {
-            status: { not: "NEW" },
-            driverId: payload.id,
-          },
-        ],
+        OR: [{ status: "NEW" }, { driverId: payload.id }],
       },
       include: {
         warehouse: true,
         client: true,
       },
+      orderBy: {
+        updatedAt: "desc",
+      },
     });
 
     return NextResponse.json(orders);
-  } catch {
-    return errorResponse();
+  } catch (err) {
+    console.error(err);
+    return errorResponse("Ошибка сервера при загрузке заказов");
   }
 }

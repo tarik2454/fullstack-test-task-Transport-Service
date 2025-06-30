@@ -34,7 +34,7 @@ export default function RegisterPage() {
       message.success("Регистрация прошла успешно");
       router.push("/login");
     } catch (err) {
-      console.error("Ошибка:", err);
+      console.warn("Ошибка:", err);
       message.error("Ошибка сервера");
     }
   };

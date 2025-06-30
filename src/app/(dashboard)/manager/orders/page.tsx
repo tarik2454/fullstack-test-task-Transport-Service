@@ -5,10 +5,10 @@ import { Table, Button, Select, Form, Modal, message } from "antd";
 
 interface Order {
   id: string;
-  warehouseId: string;
-  clientId: string;
   status: string;
   updatedAt: string;
+  client: Client;
+  warehouse: Warehouse;
 }
 
 interface Client {
@@ -139,15 +139,11 @@ export default function OrdersPage() {
           },
           {
             title: "Клиент",
-            dataIndex: "clientId",
-            render: (clientId: string) =>
-              clients.find((c) => c.id === clientId)?.name || "—",
+            dataIndex: ["client", "name"],
           },
           {
             title: "Склад",
-            dataIndex: "warehouseId",
-            render: (warehouseId: string) =>
-              warehouses.find((w) => w.id === warehouseId)?.name || "—",
+            dataIndex: ["warehouse", "name"],
           },
           {
             title: "Статус",

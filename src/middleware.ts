@@ -16,14 +16,18 @@ export async function middleware(request: NextRequest) {
   }
 
   if (token && isAuth) {
-    const payload = await verifyToken(token);
+    try {
+      const payload = await verifyToken(token);
 
-    if (payload?.role === "MANAGER") {
-      return NextResponse.redirect(new URL("/manager/orders", request.url));
-    }
+      if (payload?.role === "MANAGER") {
+        return NextResponse.redirect(new URL("/manager/orders", request.url));
+      }
 
-    if (payload?.role === "DRIVER") {
-      return NextResponse.redirect(new URL("/driver/orders", request.url));
+      if (payload?.role === "DRIVER") {
+        return NextResponse.redirect(new URL("/driver/orders", request.url));
+      }
+    } catch {
+      return NextResponse.redirect(new URL("/login", request.url));
     }
   }
 
@@ -31,5 +35,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/manager/:path*", "/driver", "/login", "/register"],
+  matcher: ["/manager/:path*", "/driver/:path*", "/login", "/register"],
 };
