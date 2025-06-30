@@ -9,6 +9,14 @@ interface Order {
   updatedAt: string;
   client: Client;
   warehouse: Warehouse;
+  manager: {
+    firstName: string;
+    lastName: string;
+  };
+  driver?: {
+    firstName: string;
+    lastName: string;
+  };
 }
 
 interface Client {
@@ -144,6 +152,18 @@ export default function OrdersPage() {
           {
             title: "Склад",
             dataIndex: ["warehouse", "name"],
+          },
+          {
+            title: "Менеджер",
+            dataIndex: "manager",
+            render: (manager: Order["manager"]) =>
+              `${manager.firstName} ${manager.lastName}`,
+          },
+          {
+            title: "Водитель",
+            dataIndex: "driver",
+            render: (driver?: Order["driver"]) =>
+              driver ? `${driver.firstName} ${driver.lastName}` : "—",
           },
           {
             title: "Статус",

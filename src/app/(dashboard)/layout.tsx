@@ -39,12 +39,15 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           </div>
         )}
 
-        <button
-          onClick={handleLogout}
-          className="text-blue-500 hover:underline cursor-pointer"
-        >
-          Выйти
-        </button>
+        <div className="flex items-center gap-4">
+          <p>{firstSegment}</p>
+          <button
+            onClick={handleLogout}
+            className="text-blue-500 hover:underline cursor-pointer"
+          >
+            Выйти
+          </button>
+        </div>
       </nav>
       <main className="p-6">{children}</main>
     </div>

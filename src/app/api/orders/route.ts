@@ -16,6 +16,18 @@ export async function GET() {
       include: {
         client: true,
         warehouse: true,
+        manager: {
+          select: {
+            firstName: true,
+            lastName: true,
+          },
+        },
+        driver: {
+          select: {
+            firstName: true,
+            lastName: true,
+          },
+        },
       },
     });
 

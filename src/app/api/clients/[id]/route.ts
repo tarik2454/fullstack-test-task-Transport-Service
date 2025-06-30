@@ -6,11 +6,14 @@ import { errorResponse } from "@/lib/apiResponse";
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
   try {
     const data = await req.json();
-    const client = await db.client.update({ where: { id: params.id }, data });
+    const client = await db.client.update({
+      where: { id: context.params.id },
+      data,
+    });
     return NextResponse.json(client);
   } catch {
     return errorResponse();

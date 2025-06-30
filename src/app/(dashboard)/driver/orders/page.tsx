@@ -25,6 +25,7 @@ export default function DriverOrdersPage() {
     setLoading(true);
     const res = await fetch("/api/driver/orders");
     const data = await res.json();
+
     setOrders(data);
     setLoading(false);
   };
