@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
 import { OrderStatus } from "@prisma/client";
-import { cookies } from "next/headers";
 import { errorResponse } from "@/utils/apiResponse";
-import { verifyToken } from "@/utils/auth";
+import { withAuth } from "@/utils/withAuth";
+import { orderStatusUpdateSchema } from "@/schemas/orderSchemas";
+import { formatZodErrors } from "@/lib/zodUtils";
 
 export async function PATCH(
   req: NextRequest,
@@ -11,29 +12,27 @@ export async function PATCH(
 ) {
   try {
     const { id } = await params;
-    const { status }: { status: string } = await req.json();
+    const body = await req.json();
 
-    if (!Object.values(OrderStatus).includes(status as OrderStatus)) {
-      return errorResponse("Неверный статус", 400);
+    const parseResult = orderStatusUpdateSchema.safeParse(body);
+
+    if (!parseResult.success) {
+      return errorResponse(formatZodErrors(parseResult.error), 400);
     }
+
+    const { status } = parseResult.data;
 
     const currentOrder = await db.order.findUnique({
       where: { id: id },
     });
     if (!currentOrder) {
-      return errorResponse("Заказ не найден", 404);
+      return errorResponse("Order not found", 404);
     }
 
-    const cookieStore = await cookies();
-    const token = cookieStore.get("token")?.value;
-    if (!token) return errorResponse("Нет токена", 401);
+    const user = await withAuth("DRIVER");
+    if (!user) return errorResponse("Unauthorized", 401);
 
-    const payload = await verifyToken(token);
-    if (!payload || payload.role !== "DRIVER") {
-      return errorResponse("Нет прав", 403);
-    }
-
-    const driverIdFromToken = payload.id;
+    const driverIdFromToken = user.id;
 
     const dataToUpdate: {
       status: OrderStatus;
@@ -52,8 +51,7 @@ export async function PATCH(
     });
 
     return NextResponse.json(updatedOrder);
-  } catch (err) {
-    console.error(err);
-    return errorResponse("Ошибка при обновлении статуса заказа");
+  } catch {
+    return errorResponse();
   }
 }

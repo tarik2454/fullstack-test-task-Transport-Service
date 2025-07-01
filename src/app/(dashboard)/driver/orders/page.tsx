@@ -43,10 +43,11 @@ export default function DriverOrdersPage() {
 
     if (!res.ok) {
       const { error } = await res.json();
-      message.error(error || "Ошибка при обновлении заказа");
+      message.error(error);
+      return;
     }
 
-    message.success("Статус заказа обновлен");
+    message.success("Order status updated");
     fetchOrders();
   };
 

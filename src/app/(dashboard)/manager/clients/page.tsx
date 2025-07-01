@@ -74,7 +74,7 @@ export default function ClientsPage() {
       return;
     }
 
-    message.success("Deleted");
+    message.success("Successfully deleted");
     fetchClients();
   };
 
