@@ -28,7 +28,7 @@ export default function RegisterPage() {
         return;
       }
 
-      message.success("Регистрация прошла успешно");
+      message.success("Registration was successful");
       router.push("/login");
     } catch (err) {
       console.warn("Ошибка:", err);
