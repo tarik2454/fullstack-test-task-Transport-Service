@@ -33,6 +33,10 @@ body {
   padding-bottom: 5px !important;
 }
 
+.ant-form-item {
+  margin-bottom: 18px !important;
+}
+
 .ant-form-item-explain-error {
   font-size: 12px !important;
 }

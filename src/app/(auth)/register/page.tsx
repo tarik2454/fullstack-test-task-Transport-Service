@@ -1,35 +1,32 @@
 "use client";
 
-import React, { useState } from "react";
-import { Input, Button, Select, message } from "antd";
+import React from "react";
+import { Form, Input, Button, Select, message } from "antd";
 import { useRouter } from "next/navigation";
+import { handleServerErrors } from "@/utils/handleFormErrors";
 
 const { Option } = Select;
 
 export default function RegisterPage() {
-  const [form, setForm] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    password: "",
-    role: "MANAGER",
-  });
+  const [form] = Form.useForm();
   const router = useRouter();
-
-  const handleChange = (field: string, value: string) => {
-    setForm({ ...form, [field]: value });
-  };
 
   const handleSubmit = async () => {
     try {
+      const values = await form.validateFields();
+
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify(values),
       });
 
       const data = await res.json();
-      if (!res.ok) return message.error(data.error || "Ошибка регистрации");
+
+      if (!res.ok) {
+        handleServerErrors(data.error, form);
+        return;
+      }
 
       message.success("Регистрация прошла успешно");
       router.push("/login");
@@ -43,43 +40,46 @@ export default function RegisterPage() {
     <div className="max-w-md mx-auto mt-10 p-6 border rounded-xl shadow">
       <h2 className="text-2xl font-semibold mb-6 text-center">Registration</h2>
 
-      <Input
-        placeholder="Имя"
-        className="mb-4"
-        value={form.firstName}
-        onChange={(e) => handleChange("firstName", e.target.value)}
-      />
-      <Input
-        placeholder="Фамилия"
-        className="mb-4"
-        value={form.lastName}
-        onChange={(e) => handleChange("lastName", e.target.value)}
-      />
-      <Input
-        placeholder="Email"
-        className="mb-4"
-        type="email"
-        value={form.email}
-        onChange={(e) => handleChange("email", e.target.value)}
-      />
-      <Input.Password
-        placeholder="Пароль"
-        className="mb-4"
-        value={form.password}
-        onChange={(e) => handleChange("password", e.target.value)}
-      />
-      <Select
-        className="mb-6 w-full"
-        value={form.role}
-        onChange={(value) => handleChange("role", value)}
-      >
-        <Option value="MANAGER">Manager</Option>
-        <Option value="DRIVER">Driver</Option>
-      </Select>
+      <Form form={form} layout="vertical" onFinish={handleSubmit}>
+        <Form.Item name="firstName" label="Name" rules={[{ required: true }]}>
+          <Input />
+        </Form.Item>
 
-      <Button type="primary" className="w-full" onClick={handleSubmit}>
-        Register
-      </Button>
+        <Form.Item
+          name="lastName"
+          label="Last name"
+          rules={[{ required: true }]}
+        >
+          <Input />
+        </Form.Item>
+
+        <Form.Item
+          name="email"
+          label="Email"
+          rules={[{ required: true }, { type: "email" }]}
+        >
+          <Input />
+        </Form.Item>
+
+        <Form.Item
+          name="password"
+          label="Password"
+          rules={[{ required: true }]}
+        >
+          <Input.Password />
+        </Form.Item>
+
+        <Form.Item name="role" label="Role" rules={[{ required: true }]}>
+          <Select placeholder="Сhoose your role">
+            <Option value="MANAGER">Manager</Option>
+            <Option value="DRIVER">Driver</Option>
+          </Select>
+        </Form.Item>
+
+        <Button type="primary" htmlType="submit" className="w-full mt-4">
+          Register
+        </Button>
+      </Form>
     </div>
   );
 }

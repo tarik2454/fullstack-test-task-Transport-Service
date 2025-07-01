@@ -1,19 +1,20 @@
 import { hash } from "bcryptjs";
 import { NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
-import { registerSchema } from "@/schemas/zodSchemas";
 import { errorResponse } from "@/utils/apiResponse";
+import { registerSchema } from "@/schemas/authSchemas";
+import { formatZodErrors } from "@/lib/zodUtils";
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    const parse = registerSchema.safeParse(body);
-    if (!parse.success) {
-      return errorResponse("Invalid data", 400);
+    const parseResult = registerSchema.safeParse(body);
+    if (!parseResult.success) {
+      return errorResponse(formatZodErrors(parseResult.error), 400);
     }
 
-    const { email, password, firstName, lastName, role } = parse.data;
+    const { email, password, firstName, lastName, role } = parseResult.data;
 
     const hashed = await hash(password, 10);
 

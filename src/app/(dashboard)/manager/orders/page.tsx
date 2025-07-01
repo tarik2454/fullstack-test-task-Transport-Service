@@ -231,7 +231,7 @@ export default function OrdersPage() {
             name="status"
             label="Status"
             initialValue="NEW"
-            rules={[{ required: true, message: "Choose a status" }]}
+            rules={[{ required: true }]}
           >
             <Select
               placeholder="Choose a status"

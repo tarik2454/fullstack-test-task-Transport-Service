@@ -15,7 +15,6 @@ export async function PATCH(
     const body = await req.json();
 
     const parseResult = orderStatusUpdateSchema.safeParse(body);
-
     if (!parseResult.success) {
       return errorResponse(formatZodErrors(parseResult.error), 400);
     }
