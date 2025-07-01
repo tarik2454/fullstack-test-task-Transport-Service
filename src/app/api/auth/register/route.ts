@@ -1,8 +1,8 @@
 import { hash } from "bcryptjs";
 import { NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
-import { registerSchema } from "@/lib/zodSchemas";
-import { errorResponse } from "@/lib/apiResponse";
+import { registerSchema } from "@/schemas/zodSchemas";
+import { errorResponse } from "@/utils/apiResponse";
 
 export async function POST(req: Request) {
   try {

@@ -1,7 +1,9 @@
-import { withAuth } from "@/lib/withAuth";
+import { withAuth } from "@/utils/withAuth";
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
-import { errorResponse } from "@/lib/apiResponse";
+import { errorResponse } from "@/utils/apiResponse";
+import { orderCreateSchema } from "@/schemas/orderSchemas";
+import { formatZodErrors } from "@/lib/zodUtils";
 
 export async function GET() {
   try {
@@ -45,7 +47,13 @@ export async function POST(req: NextRequest) {
     }
 
     const { id: managerId } = user as { id: string };
+
     const body = await req.json();
+
+    const parseResult = orderCreateSchema.safeParse(body);
+    if (!parseResult.success) {
+      return errorResponse(formatZodErrors(parseResult.error), 400);
+    }
 
     const order = await db.order.create({
       data: {

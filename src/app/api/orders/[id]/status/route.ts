@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
-import { errorResponse } from "@/lib/apiResponse";
 import { OrderStatus } from "@prisma/client";
 import { cookies } from "next/headers";
-import { verifyToken } from "@/lib/auth";
+import { errorResponse } from "@/utils/apiResponse";
+import { verifyToken } from "@/utils/auth";
 
 export async function PATCH(
   req: NextRequest,

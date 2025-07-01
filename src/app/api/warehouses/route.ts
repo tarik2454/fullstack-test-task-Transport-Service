@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
-import { withAuth } from "@/lib/withAuth";
-import { errorResponse } from "@/lib/apiResponse";
+import { withAuth } from "@/utils/withAuth";
+import { errorResponse } from "@/utils/apiResponse";
+import { warehouseCreateSchema } from "@/schemas/warehouseSchemas";
+import { formatZodErrors } from "@/lib/zodUtils";
 
 export async function GET() {
   try {
@@ -13,8 +15,7 @@ export async function GET() {
     });
 
     return NextResponse.json(warehouses);
-  } catch (error) {
-    console.error("GET /api/warehouses error:", error);
+  } catch {
     return errorResponse();
   }
 }
@@ -25,6 +26,11 @@ export async function POST(req: NextRequest) {
     if (!user) return errorResponse("Unauthorized", 401);
 
     const data = await req.json();
+
+    const parseResult = warehouseCreateSchema.safeParse(data);
+    if (!parseResult.success) {
+      return errorResponse(formatZodErrors(parseResult.error), 400);
+    }
 
     const warehouse = await db.warehouse.create({
       data: {

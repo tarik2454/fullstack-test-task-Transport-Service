@@ -19,22 +19,18 @@ export default function WarehousesPage() {
 
   const fetchWarehouses = async () => {
     setLoading(true);
-    try {
-      const res = await fetch("/api/warehouses");
 
-      if (!res.ok) {
-        const errorText = await res.text();
-        console.error("Ошибка /api/warehouses:", res.status, errorText);
-        return;
-      }
+    const res = await fetch("/api/warehouses");
 
-      const data = await res.json();
-      setWarehouses(data);
-    } catch (err) {
-      console.error("Сетевой сбой или другая ошибка:", err);
-    } finally {
-      setLoading(false);
+    if (!res.ok) {
+      const { error } = await res.json();
+      message.error(error);
+      return;
     }
+
+    const data = await res.json();
+    setWarehouses(data);
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -84,8 +80,8 @@ export default function WarehousesPage() {
   return (
     <div>
       <div className="flex justify-between mb-4">
-        <h2 className="text-xl font-semibold">Склады</h2>
-        <Button onClick={() => setIsModalOpen(true)}>Добавить</Button>
+        <h2 className="text-xl font-semibold">Warehouses</h2>
+        <Button onClick={() => setIsModalOpen(true)}>Add warehouse</Button>
       </div>
 
       <Table
@@ -101,10 +97,10 @@ export default function WarehousesPage() {
             render: (_: unknown, __: Warehouse, index: number) => index + 1,
             width: 50,
           },
-          { title: "Название", dataIndex: "name" },
-          { title: "Адрес", dataIndex: "address" },
+          { title: "Name", dataIndex: "name" },
+          { title: "Address", dataIndex: "address" },
           {
-            title: "Действия",
+            title: "Actions",
             render: (_, record) => (
               <div className="flex gap-2">
                 <Button
@@ -115,14 +111,14 @@ export default function WarehousesPage() {
                     setIsModalOpen(true);
                   }}
                 >
-                  Изменить
+                  Change
                 </Button>
                 <Button
                   size="small"
                   danger
                   onClick={() => handleDelete(record.id)}
                 >
-                  Удалить
+                  Delete
                 </Button>
               </div>
             ),
@@ -131,7 +127,7 @@ export default function WarehousesPage() {
       />
 
       <Modal
-        title={editing ? "Изменить склад" : "Добавить склад"}
+        title={editing ? "Change warehouses" : "Add warehouses"}
         open={isModalOpen}
         onOk={handleSave}
         onCancel={() => {
@@ -141,10 +137,14 @@ export default function WarehousesPage() {
         }}
       >
         <Form layout="vertical" form={form}>
-          <Form.Item name="name" label="Название" rules={[{ required: true }]}>
+          <Form.Item name="name" label="Name" rules={[{ required: true }]}>
             <Input />
           </Form.Item>
-          <Form.Item name="address" label="Адрес" rules={[{ required: true }]}>
+          <Form.Item
+            name="address"
+            label="Address"
+            rules={[{ required: true }]}
+          >
             <Input />
           </Form.Item>
         </Form>

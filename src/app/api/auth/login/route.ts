@@ -2,7 +2,7 @@ import { db } from "@/lib/prisma";
 import { compare } from "bcryptjs";
 import { sign } from "jsonwebtoken";
 import { NextResponse } from "next/server";
-import { errorResponse } from "@/lib/apiResponse";
+import { errorResponse } from "@/utils/apiResponse";
 
 const JWT_SECRET = process.env.JWT_SECRET || "secret";
 

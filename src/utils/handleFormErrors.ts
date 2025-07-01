@@ -11,6 +11,6 @@ export function handleServerErrors(error: unknown, form: FormInstance) {
   } else if (typeof error === "string") {
     message.error(error);
   } else {
-    message.error("Ошибка сохранения");
+    message.error("Save error");
   }
 }

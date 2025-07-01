@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
 import { cookies } from "next/headers";
-import { verifyToken } from "@/lib/auth";
-import { errorResponse } from "@/lib/apiResponse";
+import { verifyToken } from "@/utils/auth";
+import { errorResponse } from "@/utils/apiResponse";
 
 type JwtPayload = {
   id: string;

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
 
-export function errorResponse(error: unknown = "Ошибка сервера", status = 500) {
+export function errorResponse(error: unknown = "Server error", status = 500) {
   return NextResponse.json({ error }, { status });
 }
