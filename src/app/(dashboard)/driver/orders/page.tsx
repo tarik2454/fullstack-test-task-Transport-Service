@@ -53,7 +53,9 @@ export default function DriverOrdersPage() {
 
   return (
     <div>
-      <h2 className="text-xl font-semibold mb-4">Доступные и текущие заказы</h2>
+      <h2 className="text-xl font-semibold mb-4">
+        Available and current orders
+      </h2>
       <Table
         rowKey="id"
         dataSource={Array.isArray(orders) ? orders : []}
@@ -67,10 +69,10 @@ export default function DriverOrdersPage() {
             render: (_: unknown, __: Order, index: number) => index + 1,
             width: 50,
           },
-          { title: "Клиент", dataIndex: ["client", "name"] },
-          { title: "Склад", dataIndex: ["warehouse", "name"] },
+          { title: "Client", dataIndex: ["client", "name"] },
+          { title: "Warehouse", dataIndex: ["warehouse", "name"] },
           {
-            title: "Статус",
+            title: "Status",
             dataIndex: "status",
             render: (status: string, record: Order) => (
               <Select
