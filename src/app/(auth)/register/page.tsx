@@ -41,7 +41,7 @@ export default function RegisterPage() {
 
   return (
     <div className="max-w-md mx-auto mt-10 p-6 border rounded-xl shadow">
-      <h2 className="text-2xl font-semibold mb-6 text-center">Регистрация</h2>
+      <h2 className="text-2xl font-semibold mb-6 text-center">Registration</h2>
 
       <Input
         placeholder="Имя"
@@ -73,12 +73,12 @@ export default function RegisterPage() {
         value={form.role}
         onChange={(value) => handleChange("role", value)}
       >
-        <Option value="MANAGER">Менеджер</Option>
-        <Option value="DRIVER">Водитель</Option>
+        <Option value="MANAGER">Manager</Option>
+        <Option value="DRIVER">Driver</Option>
       </Select>
 
       <Button type="primary" className="w-full" onClick={handleSubmit}>
-        Зарегистрироваться
+        Register
       </Button>
     </div>
   );

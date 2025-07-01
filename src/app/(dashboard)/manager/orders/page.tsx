@@ -40,24 +40,16 @@ export default function OrdersPage() {
 
   const fetchAll = async () => {
     setLoading(true);
-    try {
-      const [ordersRes, clientsRes, warehousesRes] = await Promise.all([
+
+    const [ordersResult, clientsResult, warehousesResult] =
+      await Promise.allSettled([
         fetch("/api/orders"),
         fetch("/api/clients"),
         fetch("/api/warehouses"),
       ]);
 
-      if (!ordersRes.ok || !clientsRes.ok || !warehousesRes.ok) {
-        const errorText = await ordersRes.text();
-        console.error("Ошибка при загрузке данных:", errorText);
-        message.error("Ошибка при загрузке данных");
-        return;
-      }
-
-      const ordersData = await ordersRes.json();
-      const clientsData = await clientsRes.json();
-      const warehousesData = await warehousesRes.json();
-
+    if (ordersResult.status === "fulfilled" && ordersResult.value.ok) {
+      const ordersData = await ordersResult.value.json();
       setOrders(
         ordersData
           .slice()
@@ -66,15 +58,25 @@ export default function OrdersPage() {
               new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
           )
       );
-
-      setClients(clientsData);
-      setWarehouses(warehousesData);
-    } catch (error) {
-      console.error("Ошибка при fetchAll:", error);
-      message.error("Ошибка при загрузке данных");
-    } finally {
-      setLoading(false);
+    } else {
+      message.warning("Failed to upload orders");
     }
+
+    if (clientsResult.status === "fulfilled" && clientsResult.value.ok) {
+      const clientsData = await clientsResult.value.json();
+      setClients(clientsData);
+    } else {
+      message.warning("Failed to load clients");
+    }
+
+    if (warehousesResult.status === "fulfilled" && warehousesResult.value.ok) {
+      const warehousesData = await warehousesResult.value.json();
+      setWarehouses(warehousesData);
+    } else {
+      message.warning("Failed to load warehouses");
+    }
+
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -96,18 +98,16 @@ export default function OrdersPage() {
 
       if (!res.ok) {
         const { error } = await res.json();
-        message.error(error || "Ошибка при сохранении заказа");
+        message.error(error);
         return;
       }
 
-      message.success(editing ? "Заказ обновлен" : "Заказ создан");
+      message.success(editing ? "Order updated" : "Order created");
       fetchAll();
       setIsModalOpen(false);
       form.resetFields();
       setEditing(null);
-    } catch (err) {
-      console.warn("Валидация не прошла", err);
-    }
+    } catch {}
   };
 
   const handleDelete = async (id: string) => {
@@ -115,20 +115,20 @@ export default function OrdersPage() {
 
     if (!res.ok) {
       const { error } = await res.json();
-      message.error(error || "Ошибка при удалении заказа");
+      message.error(error);
       return;
     }
 
-    message.success("Заказ удалён");
+    message.success("Order deleted");
     fetchAll();
   };
 
   return (
     <div>
       <div className="flex justify-between mb-4">
-        <h2 className="text-xl font-semibold">Заказы</h2>
+        <h2 className="text-xl font-semibold">Orders</h2>
         <Button type="primary" onClick={() => setIsModalOpen(true)}>
-          Создать
+          Create
         </Button>
       </div>
 
@@ -146,31 +146,31 @@ export default function OrdersPage() {
             width: 50,
           },
           {
-            title: "Клиент",
+            title: "Client",
             dataIndex: ["client", "name"],
           },
           {
-            title: "Склад",
+            title: "Warehouse",
             dataIndex: ["warehouse", "name"],
           },
           {
-            title: "Менеджер",
+            title: "Manager",
             dataIndex: "manager",
             render: (manager: Order["manager"]) =>
               `${manager.firstName} ${manager.lastName}`,
           },
           {
-            title: "Водитель",
+            title: "Driver",
             dataIndex: "driver",
             render: (driver?: Order["driver"]) =>
               driver ? `${driver.firstName} ${driver.lastName}` : "—",
           },
           {
-            title: "Статус",
+            title: "Status",
             dataIndex: "status",
           },
           {
-            title: "Действия",
+            title: "Actions",
             render: (_, record: Order) => (
               <div className="flex gap-2">
                 <Button
@@ -197,7 +197,7 @@ export default function OrdersPage() {
       />
 
       <Modal
-        title={editing ? "Изменить заказ" : "Создать заказ"}
+        title={editing ? "Change order" : "Create order"}
         open={isModalOpen}
         onOk={handleSave}
         onCancel={() => {
@@ -209,31 +209,32 @@ export default function OrdersPage() {
         <Form layout="vertical" form={form}>
           <Form.Item
             name="clientId"
-            label="Клиент"
-            rules={[{ required: true, message: "Выберите клиента" }]}
+            label="Client"
+            rules={[{ required: true, message: "Choose a client" }]}
           >
             <Select
-              placeholder="Выберите клиента"
+              placeholder="Choose a client"
               options={clients.map((c) => ({ label: c.name, value: c.id }))}
             />
           </Form.Item>
           <Form.Item
             name="warehouseId"
-            label="Склад"
-            rules={[{ required: true, message: "Выберите склад" }]}
+            label="Warehouse"
+            rules={[{ required: true, message: "Choose a warehouse" }]}
           >
             <Select
-              placeholder="Выберите склад"
+              placeholder="Choose a warehouse"
               options={warehouses.map((w) => ({ label: w.name, value: w.id }))}
             />
           </Form.Item>
           <Form.Item
             name="status"
-            label="Статус"
-            rules={[{ required: true, message: "Выберите статус" }]}
+            label="Status"
+            initialValue="NEW"
+            rules={[{ required: true, message: "Choose a status" }]}
           >
             <Select
-              placeholder="Выберите статус"
+              placeholder="Choose a status"
               options={[
                 { label: "NEW", value: "NEW" },
                 { label: "IN_PROGRESS", value: "IN_PROGRESS" },

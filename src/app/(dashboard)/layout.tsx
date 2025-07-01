@@ -27,15 +27,20 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       <nav className="bg-white shadow px-6 py-4 flex justify-between">
         {role === "MANAGER" && (
           <div className="flex gap-4">
-            <Link href="/manager/orders">Заказы</Link>
-            <Link href="/manager/warehouses">Склады</Link>
-            <Link href="/manager/clients">Клиенты</Link>
+            <Link
+              href="/manager/orders"
+              className="hover:text-blue-500 transition "
+            >
+              Orders
+            </Link>
+            <Link href="/manager/warehouses">Warehouses</Link>
+            <Link href="/manager/clients">Clients</Link>
           </div>
         )}
 
         {role === "DRIVER" && (
           <div className="flex gap-4">
-            <Link href="/driver/orders">Мои заказы</Link>
+            <Link href="/driver/orders">My Orders</Link>
           </div>
         )}
 
@@ -45,7 +50,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             onClick={handleLogout}
             className="text-blue-500 hover:underline cursor-pointer"
           >
-            Выйти
+            Log out
           </button>
         </div>
       </nav>

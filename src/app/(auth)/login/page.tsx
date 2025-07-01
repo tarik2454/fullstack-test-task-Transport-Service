@@ -57,7 +57,7 @@ export default function LoginPage() {
       />
 
       <Button type="primary" className="w-full" onClick={handleSubmit}>
-        Войти
+        Login
       </Button>
     </div>
   );
