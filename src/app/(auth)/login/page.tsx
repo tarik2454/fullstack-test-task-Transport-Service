@@ -20,7 +20,7 @@ export default function LoginPage() {
 
       if (res.ok) {
         const { role } = await res.json();
-        message.success("Успешный вход");
+        message.success("Successful entry");
         router.push(role === "MANAGER" ? "/manager/orders" : "/driver/orders");
       } else {
         const { error } = await res.json();
@@ -30,30 +30,37 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 border rounded-xl shadow">
-      <h2 className="text-2xl font-semibold mb-6 text-center">Enter</h2>
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div className="mx-auto p-6 border rounded-xl shadow bg-gray-50">
+        <h2 className="text-2xl font-semibold mb-6 text-center">Enter</h2>
 
-      <Form form={form} layout="vertical" onFinish={handleSubmit}>
-        <Form.Item
-          name="email"
-          label="Email"
-          rules={[{ required: true }, { type: "email" }]}
+        <Form
+          className="w-[380px]"
+          form={form}
+          layout="vertical"
+          onFinish={handleSubmit}
         >
-          <Input />
-        </Form.Item>
+          <Form.Item
+            name="email"
+            label="Email"
+            rules={[{ required: true }, { type: "email" }]}
+          >
+            <Input />
+          </Form.Item>
 
-        <Form.Item
-          name="password"
-          label="Password"
-          rules={[{ required: true }]}
-        >
-          <Input.Password />
-        </Form.Item>
+          <Form.Item
+            name="password"
+            label="Password"
+            rules={[{ required: true }]}
+          >
+            <Input.Password />
+          </Form.Item>
 
-        <Button type="primary" htmlType="submit" className="w-full">
-          Login
-        </Button>
-      </Form>
+          <Button type="primary" htmlType="submit" className="w-full mt-3">
+            Login
+          </Button>
+        </Form>
+      </div>
     </div>
   );
 }

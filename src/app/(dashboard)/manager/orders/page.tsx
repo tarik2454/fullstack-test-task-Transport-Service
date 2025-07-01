@@ -181,14 +181,14 @@ export default function OrdersPage() {
                     setIsModalOpen(true);
                   }}
                 >
-                  Изменить
+                  Change
                 </Button>
                 <Button
                   size="small"
                   danger
                   onClick={() => handleDelete(record.id)}
                 >
-                  Удалить
+                  Delete
                 </Button>
               </div>
             ),

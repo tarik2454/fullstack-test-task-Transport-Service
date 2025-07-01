@@ -2,7 +2,7 @@ import { withAuth } from "@/utils/withAuth";
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
 import { errorResponse } from "@/utils/apiResponse";
-import { clientCreateSchema } from "@/schemas/zodSchemas";
+import { clientCreateSchema } from "@/schemas/clientSchemas";
 import { formatZodErrors } from "@/lib/zodUtils";
 
 export async function GET() {

@@ -37,49 +37,58 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 border rounded-xl shadow">
-      <h2 className="text-2xl font-semibold mb-6 text-center">Registration</h2>
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div className="mx-auto p-6 border rounded-xl shadow bg-gray-50">
+        <h2 className="text-2xl font-semibold mb-6 text-center">
+          Registration
+        </h2>
 
-      <Form form={form} layout="vertical" onFinish={handleSubmit}>
-        <Form.Item name="firstName" label="Name" rules={[{ required: true }]}>
-          <Input />
-        </Form.Item>
-
-        <Form.Item
-          name="lastName"
-          label="Last name"
-          rules={[{ required: true }]}
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleSubmit}
+          className="w-[380px]"
         >
-          <Input />
-        </Form.Item>
+          <Form.Item name="firstName" label="Name" rules={[{ required: true }]}>
+            <Input />
+          </Form.Item>
 
-        <Form.Item
-          name="email"
-          label="Email"
-          rules={[{ required: true }, { type: "email" }]}
-        >
-          <Input />
-        </Form.Item>
+          <Form.Item
+            name="lastName"
+            label="Last name"
+            rules={[{ required: true }]}
+          >
+            <Input />
+          </Form.Item>
 
-        <Form.Item
-          name="password"
-          label="Password"
-          rules={[{ required: true }]}
-        >
-          <Input.Password />
-        </Form.Item>
+          <Form.Item
+            name="email"
+            label="Email"
+            rules={[{ required: true }, { type: "email" }]}
+          >
+            <Input />
+          </Form.Item>
 
-        <Form.Item name="role" label="Role" rules={[{ required: true }]}>
-          <Select placeholder="Сhoose your role">
-            <Option value="MANAGER">Manager</Option>
-            <Option value="DRIVER">Driver</Option>
-          </Select>
-        </Form.Item>
+          <Form.Item
+            name="password"
+            label="Password"
+            rules={[{ required: true }]}
+          >
+            <Input.Password />
+          </Form.Item>
 
-        <Button type="primary" htmlType="submit" className="w-full mt-4">
-          Register
-        </Button>
-      </Form>
+          <Form.Item name="role" label="Role" rules={[{ required: true }]}>
+            <Select placeholder="Сhoose your role">
+              <Option value="MANAGER">Manager</Option>
+              <Option value="DRIVER">Driver</Option>
+            </Select>
+          </Form.Item>
+
+          <Button type="primary" htmlType="submit" className="w-full mt-3">
+            Register
+          </Button>
+        </Form>
+      </div>
     </div>
   );
 }
