@@ -71,7 +71,7 @@ export default function OrdersPage() {
 
     if (warehousesResult.status === "fulfilled" && warehousesResult.value.ok) {
       const warehousesData = await warehousesResult.value.json();
-      console.log(warehousesData);
+
       setWarehouses(warehousesData);
     } else {
       message.warning("Failed to load warehouses");

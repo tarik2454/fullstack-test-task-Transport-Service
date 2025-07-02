@@ -8,9 +8,9 @@ export const orderCreateSchema = z.object({
 });
 
 export const orderUpdateSchema = z.object({
-  clientId: z.string().min(1).optional(),
-  warehouseId: z.string().min(1).optional(),
-  status: z.enum(["NEW", "IN_PROGRESS", "COMPLETED"]).optional(),
+  clientId: z.string().min(2).optional(),
+  warehouseId: z.string().min(2).optional(),
+  status: z.nativeEnum(OrderStatus).optional(),
 });
 
 export const orderStatusUpdateSchema = z.object({

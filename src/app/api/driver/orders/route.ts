@@ -21,8 +21,7 @@ export async function GET() {
     });
 
     return successResponse(orders);
-  } catch (err) {
-    console.error(err);
+  } catch {
     return errorResponse();
   }
 }
