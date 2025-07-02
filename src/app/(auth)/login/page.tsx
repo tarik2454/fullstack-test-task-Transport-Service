@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { Form, Input, Button, message } from "antd";
 import { handleServerErrors } from "@/utils/handleFormErrors";
+import Link from "next/link";
 
 export default function LoginPage() {
   const [form] = Form.useForm();
@@ -60,6 +61,13 @@ export default function LoginPage() {
             Login
           </Button>
         </Form>
+
+        <p className="mt-3 text-center text-sm text-gray-600">
+          Return to
+          <Link href="/" className="text-blue-600 hover:underline">
+            &nbsp;main page
+          </Link>
+        </p>
       </div>
     </div>
   );

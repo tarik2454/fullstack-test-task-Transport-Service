@@ -4,6 +4,7 @@ import React from "react";
 import { Form, Input, Button, Select, message } from "antd";
 import { useRouter } from "next/navigation";
 import { handleServerErrors } from "@/utils/handleFormErrors";
+import Link from "next/link";
 
 const { Option } = Select;
 
@@ -12,28 +13,28 @@ export default function RegisterPage() {
   const router = useRouter();
 
   const handleSubmit = async () => {
-    try {
-      const values = await form.validateFields();
+    const values = await form.validateFields();
 
-      const res = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
-      });
+    const res = await fetch("/api/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(values),
+    });
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        handleServerErrors(data.error, form);
-        return;
-      }
-
-      message.success("Registration was successful");
-      router.push("/login");
-    } catch (err) {
-      console.warn("Ошибка:", err);
-      message.error("Ошибка сервера");
+    if (!res) {
+      message.error("Server error");
+      return;
     }
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      handleServerErrors(data.error, form);
+      return;
+    }
+
+    message.success("Registration was successful");
+    router.push("/login");
   };
 
   return (
@@ -47,7 +48,7 @@ export default function RegisterPage() {
           form={form}
           layout="vertical"
           onFinish={handleSubmit}
-          className="w-[380px]"
+          className="w-[380px] mb-2"
         >
           <Form.Item name="firstName" label="Name" rules={[{ required: true }]}>
             <Input />
@@ -88,6 +89,13 @@ export default function RegisterPage() {
             Register
           </Button>
         </Form>
+
+        <p className="mt-3 text-center text-sm text-gray-600">
+          Return to
+          <Link href="/" className="text-blue-600 hover:underline">
+            &nbsp;main page
+          </Link>
+        </p>
       </div>
     </div>
   );
