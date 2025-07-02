@@ -21,17 +21,35 @@ export default function DriverOrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const fetchOrders = async () => {
+  const fetchOrders = async (isMounted = true) => {
     setLoading(true);
-    const res = await fetch("/api/driver/orders");
-    const data = await res.json();
 
-    setOrders(data);
-    setLoading(false);
+    try {
+      const res = await fetch("/api/driver/orders");
+      const data = await res.json();
+
+      if (!res.ok) return;
+
+      if (isMounted) {
+        setOrders(data);
+      }
+    } catch {
+      message.error("Failed to load orders");
+    } finally {
+      if (isMounted) {
+        setLoading(false);
+      }
+    }
   };
 
   useEffect(() => {
-    fetchOrders();
+    let isMounted = true;
+
+    fetchOrders(isMounted);
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const updateStatus = async (id: string, status: string) => {
