@@ -63,9 +63,9 @@ export default function LoginPage() {
         </Form>
 
         <p className="mt-3 text-center text-sm text-gray-600">
-          Return to
+          Return to&nbsp;
           <Link href="/" className="text-blue-600 hover:underline">
-            &nbsp;main page
+            main page
           </Link>
         </p>
       </div>
