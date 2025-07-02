@@ -1,6 +1,5 @@
-import { NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
-import { errorResponse } from "@/utils/apiResponse";
+import { errorResponse, successResponse } from "@/utils/apiResponse";
 import { withAuth } from "@/utils/withAuth";
 
 export async function GET() {
@@ -21,7 +20,7 @@ export async function GET() {
       },
     });
 
-    return NextResponse.json(orders);
+    return successResponse(orders);
   } catch (err) {
     console.error(err);
     return errorResponse();

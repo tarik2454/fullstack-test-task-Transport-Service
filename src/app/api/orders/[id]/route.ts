@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { db } from "@/lib/prisma";
-import { errorResponse } from "@/utils/apiResponse";
+import { errorResponse, successResponse } from "@/utils/apiResponse";
 import { orderUpdateSchema } from "@/schemas/orderSchemas";
 import { formatZodErrors } from "@/lib/zodUtils";
 
@@ -23,7 +23,7 @@ export async function PUT(
       include: { warehouse: true, client: true },
     });
 
-    return NextResponse.json(order);
+    return successResponse(order);
   } catch {
     return errorResponse();
   }
@@ -38,7 +38,7 @@ export async function DELETE(
 
     await db.order.delete({ where: { id } });
 
-    return NextResponse.json({ success: true });
+    return successResponse({ success: true });
   } catch {
     return errorResponse();
   }

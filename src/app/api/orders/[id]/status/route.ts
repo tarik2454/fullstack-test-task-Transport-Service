@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { db } from "@/lib/prisma";
 import { OrderStatus } from "@prisma/client";
-import { errorResponse } from "@/utils/apiResponse";
+import { errorResponse, successResponse } from "@/utils/apiResponse";
 import { withAuth } from "@/utils/withAuth";
 import { orderStatusUpdateSchema } from "@/schemas/orderSchemas";
 import { formatZodErrors } from "@/lib/zodUtils";
@@ -49,7 +49,7 @@ export async function PATCH(
       include: { warehouse: true, client: true },
     });
 
-    return NextResponse.json(updatedOrder);
+    return successResponse(updatedOrder);
   } catch {
     return errorResponse();
   }

@@ -1,7 +1,7 @@
 import { withAuth } from "@/utils/withAuth";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { db } from "@/lib/prisma";
-import { errorResponse } from "@/utils/apiResponse";
+import { errorResponse, successResponse } from "@/utils/apiResponse";
 import { orderCreateSchema } from "@/schemas/orderSchemas";
 import { formatZodErrors } from "@/lib/zodUtils";
 
@@ -33,7 +33,7 @@ export async function GET() {
       },
     });
 
-    return NextResponse.json(orders);
+    return successResponse(orders);
   } catch {
     return errorResponse();
   }
@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    return NextResponse.json(order);
+    return successResponse(order);
   } catch {
     return errorResponse();
   }

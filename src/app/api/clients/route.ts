@@ -1,7 +1,7 @@
 import { withAuth } from "@/utils/withAuth";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { db } from "@/lib/prisma";
-import { errorResponse } from "@/utils/apiResponse";
+import { errorResponse, successResponse } from "@/utils/apiResponse";
 import { clientCreateSchema } from "@/schemas/clientSchemas";
 import { formatZodErrors } from "@/lib/zodUtils";
 
@@ -14,7 +14,7 @@ export async function GET() {
       where: { managerId: user.id },
     });
 
-    return NextResponse.json(clients);
+    return successResponse(clients);
   } catch {
     return errorResponse();
   }
@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
       data: { ...data, managerId: user.id },
     });
 
-    return NextResponse.json(client);
+    return successResponse(client);
   } catch {
     return errorResponse();
   }

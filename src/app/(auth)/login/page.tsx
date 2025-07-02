@@ -19,14 +19,15 @@ export default function LoginPage() {
         body: JSON.stringify(values),
       });
 
-      if (res.ok) {
-        const { role } = await res.json();
-        message.success("Successful entry");
-        router.push(role === "MANAGER" ? "/manager/orders" : "/driver/orders");
-      } else {
+      if (!res.ok) {
         const { error } = await res.json();
         handleServerErrors(error, form);
+        return;
       }
+
+      const { role } = await res.json();
+      message.success("Successful entry");
+      router.push(role === "MANAGER" ? "/manager/orders" : "/driver/orders");
     } catch {}
   };
 

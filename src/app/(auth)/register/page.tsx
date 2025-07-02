@@ -13,28 +13,25 @@ export default function RegisterPage() {
   const router = useRouter();
 
   const handleSubmit = async () => {
-    const values = await form.validateFields();
+    try {
+      const values = await form.validateFields();
 
-    const res = await fetch("/api/auth/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(values),
-    });
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      });
 
-    if (!res) {
-      message.error("Server error");
-      return;
-    }
+      const data = await res.json();
 
-    const data = await res.json();
+      if (!res.ok) {
+        handleServerErrors(data.error, form);
+        return;
+      }
 
-    if (!res.ok) {
-      handleServerErrors(data.error, form);
-      return;
-    }
-
-    message.success("Registration was successful");
-    router.push("/login");
+      message.success("Registration was successful");
+      router.push("/login");
+    } catch {}
   };
 
   return (
