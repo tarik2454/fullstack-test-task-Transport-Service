@@ -33,14 +33,29 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             >
               Orders
             </Link>
-            <Link href="/manager/warehouses">Warehouses</Link>
-            <Link href="/manager/clients">Clients</Link>
+            <Link
+              href="/manager/warehouses"
+              className="hover:text-blue-500 transition "
+            >
+              Warehouses
+            </Link>
+            <Link
+              href="/manager/clients"
+              className="hover:text-blue-500 transition "
+            >
+              Clients
+            </Link>
           </div>
         )}
 
         {role === "DRIVER" && (
           <div className="flex gap-4">
-            <Link href="/driver/orders">My Orders</Link>
+            <Link
+              href="/driver/orders"
+              className="hover:text-blue-500 transition "
+            >
+              My Orders
+            </Link>
           </div>
         )}
 
