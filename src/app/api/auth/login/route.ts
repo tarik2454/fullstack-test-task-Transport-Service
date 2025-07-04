@@ -1,9 +1,9 @@
-import { db } from "@/lib/prisma";
+import { db } from "@/utils/prisma";
 import { compare } from "bcryptjs";
 import { sign } from "jsonwebtoken";
 import { NextResponse } from "next/server";
-import { errorResponse } from "@/utils/apiResponse";
-import { formatZodErrors } from "@/lib/zodUtils";
+import { errorResponse } from "@/utils/server/apiResponse";
+import { formatZodErrors } from "@/utils/zod/formatServerErrors";
 import { loginSchema } from "@/schemas/authSchemas";
 
 const JWT_SECRET = process.env.JWT_SECRET || "secret";

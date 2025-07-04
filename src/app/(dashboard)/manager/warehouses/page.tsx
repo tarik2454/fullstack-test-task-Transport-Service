@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Table, Button, Modal, Form, Input, message } from "antd";
-import { handleServerErrors } from "@/utils/handleFormErrors";
+import { handleFormErrors } from "@/utils/zod/handleFormErrors";
 
 interface Warehouse {
   id: string;
@@ -52,7 +52,7 @@ export default function WarehousesPage() {
 
       if (!res.ok) {
         const { error } = await res.json();
-        handleServerErrors(error, form);
+        handleFormErrors(error, form);
         return;
       }
 

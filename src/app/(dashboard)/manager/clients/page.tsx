@@ -1,6 +1,6 @@
 "use client";
 
-import { handleServerErrors } from "@/utils/handleFormErrors";
+import { handleFormErrors } from "@/utils/zod/handleFormErrors";
 import { Button, Form, Input, message, Modal, Table } from "antd";
 import { useState, useEffect } from "react";
 
@@ -53,7 +53,7 @@ export default function ClientsPage() {
 
       if (!res.ok) {
         const { error } = await res.json();
-        handleServerErrors(error, form);
+        handleFormErrors(error, form);
         return;
       }
 

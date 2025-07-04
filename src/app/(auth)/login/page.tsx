@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { Form, Input, Button, message } from "antd";
-import { handleServerErrors } from "@/utils/handleFormErrors";
+import { handleFormErrors } from "@/utils/zod/handleFormErrors";
 import Link from "next/link";
 
 export default function LoginPage() {
@@ -21,7 +21,7 @@ export default function LoginPage() {
 
       if (!res.ok) {
         const { error } = await res.json();
-        handleServerErrors(error, form);
+        handleFormErrors(error, form);
         return;
       }
 

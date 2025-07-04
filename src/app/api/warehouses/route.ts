@@ -1,9 +1,9 @@
 import { NextRequest } from "next/server";
-import { db } from "@/lib/prisma";
-import { withAuth } from "@/utils/withAuth";
-import { errorResponse, successResponse } from "@/utils/apiResponse";
+import { db } from "@/utils/prisma";
+import { withAuth } from "@/utils/auth/withAuth";
+import { errorResponse, successResponse } from "@/utils/server/apiResponse";
 import { warehouseCreateSchema } from "@/schemas/warehouseSchemas";
-import { formatZodErrors } from "@/lib/zodUtils";
+import { formatZodErrors } from "@/utils/zod/formatServerErrors";
 
 export async function GET() {
   try {

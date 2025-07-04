@@ -1,8 +1,8 @@
 import { NextRequest } from "next/server";
-import { db } from "@/lib/prisma";
-import { errorResponse, successResponse } from "@/utils/apiResponse";
+import { db } from "@/utils/prisma";
+import { errorResponse, successResponse } from "@/utils/server/apiResponse";
 import { orderUpdateSchema } from "@/schemas/orderSchemas";
-import { formatZodErrors } from "@/lib/zodUtils";
+import { formatZodErrors } from "@/utils/zod/formatServerErrors";
 
 export async function PUT(
   req: NextRequest,

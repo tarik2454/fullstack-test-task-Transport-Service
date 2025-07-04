@@ -3,7 +3,7 @@
 import React from "react";
 import { Form, Input, Button, Select, message } from "antd";
 import { useRouter } from "next/navigation";
-import { handleServerErrors } from "@/utils/handleFormErrors";
+import { handleFormErrors } from "@/utils/zod/handleFormErrors";
 import Link from "next/link";
 
 const { Option } = Select;
@@ -25,7 +25,7 @@ export default function RegisterPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        handleServerErrors(data.error, form);
+        handleFormErrors(data.error, form);
         return;
       }
 
