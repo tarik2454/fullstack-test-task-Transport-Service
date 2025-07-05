@@ -28,7 +28,8 @@ export default function WarehousesPage() {
       return;
     }
 
-    const data = await res.json();
+    const { data } = await res.json();
+
     setWarehouses(data);
     setLoading(false);
   };

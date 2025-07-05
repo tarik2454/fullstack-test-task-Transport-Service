@@ -51,7 +51,7 @@ export default function OrdersPage() {
     if (ordersResult.status === "fulfilled" && ordersResult.value.ok) {
       const ordersData = await ordersResult.value.json();
       setOrders(
-        ordersData
+        ordersData.data
           .slice()
           .sort(
             (a: Order, b: Order) =>
@@ -64,15 +64,14 @@ export default function OrdersPage() {
 
     if (clientsResult.status === "fulfilled" && clientsResult.value.ok) {
       const clientsData = await clientsResult.value.json();
-      setClients(clientsData);
+      setClients(clientsData.data);
     } else {
       message.warning("Failed to load clients");
     }
 
     if (warehousesResult.status === "fulfilled" && warehousesResult.value.ok) {
       const warehousesData = await warehousesResult.value.json();
-
-      setWarehouses(warehousesData);
+      setWarehouses(warehousesData.data);
     } else {
       message.warning("Failed to load warehouses");
     }

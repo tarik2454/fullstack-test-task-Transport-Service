@@ -5,5 +5,5 @@ export function errorResponse(error: unknown = "Server error", status = 500) {
 }
 
 export function successResponse(data: unknown = {}, status = 200) {
-  return NextResponse.json(data, { status });
+  return NextResponse.json({ data }, { status });
 }

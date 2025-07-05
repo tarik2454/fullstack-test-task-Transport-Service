@@ -28,7 +28,7 @@ export default function ClientsPage() {
       return;
     }
 
-    const data = await res.json();
+    const { data } = await res.json();
 
     setClients(data);
     setLoading(false);
