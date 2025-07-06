@@ -6,6 +6,8 @@ export const warehouseCreateSchema = z.object({
 });
 
 export const warehouseUpdateSchema = z.object({
-  name: z.string().min(2).optional(),
-  address: z.string().min(2).optional(),
+  id: z.string(),
+  name: z.string().min(2),
+  address: z.string().min(2),
 });
+export type WarehouseUpdate = z.infer<typeof warehouseUpdateSchema>;

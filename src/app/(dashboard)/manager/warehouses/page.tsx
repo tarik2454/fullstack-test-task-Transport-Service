@@ -3,18 +3,17 @@
 import { useState, useEffect } from "react";
 import { Table, Button, Modal, Form, Input, message } from "antd";
 import { handleFormErrors } from "@/utils/zod/handleFormErrors";
-
-interface Warehouse {
-  id: string;
-  name: string;
-  address: string;
-}
+import { saveWarehouse } from "@/utils/apiClient/warehouse";
+import { WarehouseUpdate } from "@/schemas/warehouseSchemas";
 
 export default function WarehousesPage() {
-  const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
+  const [warehouses, setWarehouses] = useState<WarehouseUpdate[]>([]);
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editing, setEditing] = useState<Warehouse | null>(null);
+  const [editing, setEditing] = useState<WarehouseUpdate | undefined>(
+    undefined
+  );
+
   const [form] = Form.useForm();
 
   const fetchWarehouses = async () => {
@@ -39,30 +38,22 @@ export default function WarehousesPage() {
   }, []);
 
   const handleSave = async () => {
-    try {
-      const values = await form.validateFields();
+    const values = await form.validateFields();
 
-      const method = editing ? "PUT" : "POST";
-      const url = editing ? `/api/warehouses/${editing.id}` : "/api/warehouses";
+    const payload = editing ? { ...values, id: editing.id } : values;
 
-      const res = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
-      });
+    const res = await saveWarehouse(payload, editing);
 
-      if (!res.ok) {
-        const { error } = await res.json();
-        handleFormErrors(error, form);
-        return;
-      }
+    if (!res.success) {
+      handleFormErrors(res.error, form);
+      return;
+    }
 
-      message.success("Successfully saved");
-      fetchWarehouses();
-      setIsModalOpen(false);
-      form.resetFields();
-      setEditing(null);
-    } catch {}
+    message.success("Successfully saved");
+    fetchWarehouses();
+    setIsModalOpen(false);
+    form.resetFields();
+    setEditing(undefined);
   };
 
   const handleDelete = async (id: string) => {
@@ -95,7 +86,8 @@ export default function WarehousesPage() {
             title: "#",
             dataIndex: "index",
             key: "index",
-            render: (_: unknown, __: Warehouse, index: number) => index + 1,
+            render: (_: unknown, __: WarehouseUpdate, index: number) =>
+              index + 1,
             width: 50,
           },
           { title: "Name", dataIndex: "name" },
@@ -134,17 +126,28 @@ export default function WarehousesPage() {
         onCancel={() => {
           setIsModalOpen(false);
           form.resetFields();
-          setEditing(null);
+          setEditing(undefined);
         }}
       >
         <Form layout="vertical" form={form}>
-          <Form.Item name="name" label="Name" rules={[{ required: true }]}>
+          <Form.Item
+            name="name"
+            label={
+              <span className="flex items-center gap-[2px]">
+                Name <span className="text-red-500">*</span>
+              </span>
+            }
+          >
             <Input />
           </Form.Item>
+
           <Form.Item
             name="address"
-            label="Address"
-            rules={[{ required: true }]}
+            label={
+              <span className="flex items-center gap-[2px]">
+                Address <span className="text-red-500">*</span>
+              </span>
+            }
           >
             <Input />
           </Form.Item>

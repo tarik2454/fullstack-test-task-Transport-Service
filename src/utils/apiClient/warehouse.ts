@@ -4,6 +4,11 @@ export interface Warehouse {
   address: string;
 }
 
+interface SaveWarehousePayload {
+  name: string;
+  address: string;
+}
+
 type ApiResult<T> =
   | { success: true; data: T }
   | { success: false; error: unknown };
@@ -19,11 +24,6 @@ export async function getWarehouses(): Promise<ApiResult<Warehouse[]>> {
   return { success: true, data };
 }
 
-interface SaveWarehousePayload {
-  name: string;
-  address: string;
-}
-
 export async function saveWarehouse(
   values: SaveWarehousePayload,
   editing?: Warehouse
@@ -37,13 +37,13 @@ export async function saveWarehouse(
     body: JSON.stringify(values),
   });
 
-  const data = await res.json();
+  const { data, success, error } = await res.json();
 
-  if (!res.ok) {
-    return { success: false, error: data.error };
+  if (!success) {
+    return { success: false, error: error };
   }
 
-  return { success: true, data };
+  return { success: true, data: data };
 }
 
 export async function deleteWarehouse(id: string): Promise<ApiResult<null>> {
