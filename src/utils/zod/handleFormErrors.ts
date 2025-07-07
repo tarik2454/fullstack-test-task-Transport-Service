@@ -1,10 +1,10 @@
 import { FormInstance, message } from "antd";
 
-export function handleFormErrors(error: unknown, form: FormInstance) {
-  if (error && typeof error === "object" && !Array.isArray(error)) {
+export function handleFormErrors(error: unknown, form?: FormInstance) {
+  if (error && typeof error === "object" && !Array.isArray(error) && form) {
     form.setFields(
       Object.entries(error).map(([name, errors]) => ({
-        name: [name],
+        name: name.split("."),
         errors: Array.isArray(errors) ? errors : [String(errors)],
       }))
     );

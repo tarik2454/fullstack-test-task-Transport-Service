@@ -1,13 +1,12 @@
 import { z } from "zod";
 
-export const warehouseCreateSchema = z.object({
-  name: z.string().min(2),
-  address: z.string().min(2),
-});
-
-export const warehouseUpdateSchema = z.object({
+export const warehouseSchema = z.object({
   id: z.string(),
   name: z.string().min(2),
   address: z.string().min(2),
 });
-export type WarehouseUpdate = z.infer<typeof warehouseUpdateSchema>;
+
+export const warehouseCreateSchema = warehouseSchema.omit({ id: true });
+
+export type Warehouse = z.infer<typeof warehouseSchema>;
+export type WarehouseCreate = z.infer<typeof warehouseCreateSchema>;

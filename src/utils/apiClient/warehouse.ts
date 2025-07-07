@@ -1,13 +1,4 @@
-export interface Warehouse {
-  id: string;
-  name: string;
-  address: string;
-}
-
-interface SaveWarehousePayload {
-  name: string;
-  address: string;
-}
+import { Warehouse } from "@/schemas/warehouseSchemas";
 
 type ApiResult<T> =
   | { success: true; data: T }
@@ -15,17 +6,17 @@ type ApiResult<T> =
 
 export async function getWarehouses(): Promise<ApiResult<Warehouse[]>> {
   const res = await fetch("/api/warehouses");
-  const data = await res.json();
+  const { error, data } = await res.json();
 
   if (!res.ok) {
-    return { success: false, error: data.error };
+    return { success: false, error: error };
   }
 
-  return { success: true, data };
+  return { success: true, data: data };
 }
 
 export async function saveWarehouse(
-  values: SaveWarehousePayload,
+  values: Warehouse,
   editing?: Warehouse
 ): Promise<ApiResult<Warehouse>> {
   const method = editing ? "PUT" : "POST";
@@ -37,9 +28,9 @@ export async function saveWarehouse(
     body: JSON.stringify(values),
   });
 
-  const { data, success, error } = await res.json();
+  const { error, data } = await res.json();
 
-  if (!success) {
+  if (!res.ok) {
     return { success: false, error: error };
   }
 
@@ -48,10 +39,10 @@ export async function saveWarehouse(
 
 export async function deleteWarehouse(id: string): Promise<ApiResult<null>> {
   const res = await fetch(`/api/warehouses/${id}`, { method: "DELETE" });
-  const data = await res.json();
+  const { error } = await res.json();
 
   if (!res.ok) {
-    return { success: false, error: data.error };
+    return { success: false, error: error };
   }
 
   return { success: true, data: null };

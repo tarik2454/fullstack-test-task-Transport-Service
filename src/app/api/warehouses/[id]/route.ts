@@ -3,7 +3,7 @@ import { db } from "@/utils/prisma";
 import { Prisma } from "@prisma/client";
 import { errorResponse, successResponse } from "@/utils/server/apiResponse";
 import { formatZodErrors } from "@/utils/zod/formatServerErrors";
-import { warehouseUpdateSchema } from "@/schemas/warehouseSchemas";
+import { warehouseCreateSchema } from "@/schemas/warehouseSchemas";
 
 export async function PUT(
   req: NextRequest,
@@ -13,7 +13,7 @@ export async function PUT(
     const { id } = await params;
     const data = await req.json();
 
-    const parseResult = warehouseUpdateSchema.safeParse(data);
+    const parseResult = warehouseCreateSchema.safeParse(data);
     if (!parseResult.success) {
       return errorResponse(formatZodErrors(parseResult.error), 400);
     }

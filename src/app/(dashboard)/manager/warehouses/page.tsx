@@ -3,33 +3,33 @@
 import { useState, useEffect } from "react";
 import { Table, Button, Modal, Form, Input, message } from "antd";
 import { handleFormErrors } from "@/utils/zod/handleFormErrors";
-import { saveWarehouse } from "@/utils/apiClient/warehouse";
-import { WarehouseUpdate } from "@/schemas/warehouseSchemas";
+import {
+  deleteWarehouse,
+  getWarehouses,
+  saveWarehouse,
+} from "@/utils/apiClient/warehouse";
+import { Warehouse } from "@/schemas/warehouseSchemas";
 
 export default function WarehousesPage() {
-  const [warehouses, setWarehouses] = useState<WarehouseUpdate[]>([]);
+  const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editing, setEditing] = useState<WarehouseUpdate | undefined>(
-    undefined
-  );
+  const [editing, setEditing] = useState<Warehouse | undefined>(undefined);
 
   const [form] = Form.useForm();
 
   const fetchWarehouses = async () => {
     setLoading(true);
 
-    const res = await fetch("/api/warehouses");
+    const res = await getWarehouses();
 
-    if (!res.ok) {
-      const { error } = await res.json();
-      message.error(error);
+    if (!res.success) {
+      handleFormErrors(res.error);
       return;
     }
 
-    const { data } = await res.json();
+    setWarehouses(res.data);
 
-    setWarehouses(data);
     setLoading(false);
   };
 
@@ -39,7 +39,6 @@ export default function WarehousesPage() {
 
   const handleSave = async () => {
     const values = await form.validateFields();
-
     const payload = editing ? { ...values, id: editing.id } : values;
 
     const res = await saveWarehouse(payload, editing);
@@ -57,11 +56,10 @@ export default function WarehousesPage() {
   };
 
   const handleDelete = async (id: string) => {
-    const res = await fetch(`/api/warehouses/${id}`, { method: "DELETE" });
+    const res = await deleteWarehouse(id);
 
-    if (!res.ok) {
-      const { error } = await res.json();
-      message.error(error);
+    if (!res.success) {
+      handleFormErrors(res.error);
       return;
     }
 
@@ -86,8 +84,7 @@ export default function WarehousesPage() {
             title: "#",
             dataIndex: "index",
             key: "index",
-            render: (_: unknown, __: WarehouseUpdate, index: number) =>
-              index + 1,
+            render: (_: unknown, __: Warehouse, index: number) => index + 1,
             width: 50,
           },
           { title: "Name", dataIndex: "name" },
