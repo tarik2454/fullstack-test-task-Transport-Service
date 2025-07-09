@@ -1,36 +1,29 @@
 "use client";
 
+import { Client, ClientCreate } from "@/schemas/clientSchemas";
+import { getClients, saveClient } from "@/utils/apiClient/client";
 import { handleFormErrors } from "@/utils/zod/handleFormErrors";
 import { Button, Form, Input, message, Modal, Table } from "antd";
 import { useState, useEffect } from "react";
-
-interface Client {
-  id: string;
-  name: string;
-  address: string;
-  phone: string;
-}
 
 export default function ClientsPage() {
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editing, setEditing] = useState<Client | null>(null);
+  const [editing, setEditing] = useState<ClientCreate | null>(null);
   const [form] = Form.useForm();
 
   const fetchClients = async () => {
     setLoading(true);
 
-    const res = await fetch("/api/clients");
+    const res = await getClients();
 
-    if (!res.ok) {
-      message.error("Download error");
+    if (!res.success) {
+      handleFormErrors(res.error);
       return;
     }
 
-    const { data } = await res.json();
-
-    setClients(data);
+    setClients(res.data);
     setLoading(false);
   };
 
@@ -39,30 +32,22 @@ export default function ClientsPage() {
   }, []);
 
   const handleSave = async () => {
-    try {
-      const values = await form.validateFields();
+    setLoading(true);
+    const values = await form.validateFields();
 
-      const method = editing ? "PUT" : "POST";
-      const url = editing ? `/api/clients/${editing.id}` : "/api/clients";
+    const res = await saveClient(values);
 
-      const res = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
-      });
+    if (!res.success) {
+      handleFormErrors(res.error, form);
+      return;
+    }
 
-      if (!res.ok) {
-        const { error } = await res.json();
-        handleFormErrors(error, form);
-        return;
-      }
-
-      message.success("Successfully saved");
-      fetchClients();
-      setIsModalOpen(false);
-      form.resetFields();
-      setEditing(null);
-    } catch {}
+    message.success("Successfully saved");
+    fetchClients();
+    setIsModalOpen(false);
+    form.resetFields();
+    setEditing(null);
+    setLoading(true);
   };
 
   const handleDelete = async (id: string) => {
@@ -139,17 +124,34 @@ export default function ClientsPage() {
         }}
       >
         <Form layout="vertical" form={form}>
-          <Form.Item name="name" label="Name" rules={[{ required: true }]}>
+          <Form.Item
+            name="name"
+            label={
+              <span className="flex items-center gap-[2px]">
+                Name <span className="text-red-500">*</span>
+              </span>
+            }
+          >
             <Input />
           </Form.Item>
           <Form.Item
             name="address"
-            label="Address"
-            rules={[{ required: true }]}
+            label={
+              <span className="flex items-center gap-[2px]">
+                Address <span className="text-red-500">*</span>
+              </span>
+            }
           >
             <Input />
           </Form.Item>
-          <Form.Item name="phone" label="Phone" rules={[{ required: true }]}>
+          <Form.Item
+            name="phone"
+            label={
+              <span className="flex items-center gap-[2px]">
+                Phone <span className="text-red-500">*</span>
+              </span>
+            }
+          >
             <Input />
           </Form.Item>
         </Form>

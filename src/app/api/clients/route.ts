@@ -2,7 +2,7 @@ import { withAuth } from "@/utils/auth/withAuth";
 import { NextRequest } from "next/server";
 import { db } from "@/utils/prisma";
 import { errorResponse, successResponse } from "@/utils/server/apiResponse";
-import { clientCreateSchema } from "@/schemas/clientSchemas";
+import { clientSchema } from "@/schemas/clientSchemas";
 import { formatZodErrors } from "@/utils/zod/formatServerErrors";
 
 export async function GET() {
@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
     if (!user) return errorResponse("Unauthorized", 401);
     const data = await req.json();
 
-    const parseResult = clientCreateSchema.safeParse(data);
+    const parseResult = clientSchema.safeParse(data);
     if (!parseResult.success) {
       return errorResponse(formatZodErrors(parseResult.error), 400);
     }

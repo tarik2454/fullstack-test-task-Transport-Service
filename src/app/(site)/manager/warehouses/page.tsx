@@ -15,7 +15,6 @@ export default function WarehousesPage() {
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editing, setEditing] = useState<Warehouse | undefined>(undefined);
-
   const [form] = Form.useForm();
 
   const fetchWarehouses = async () => {
@@ -29,7 +28,6 @@ export default function WarehousesPage() {
     }
 
     setWarehouses(res.data);
-
     setLoading(false);
   };
 

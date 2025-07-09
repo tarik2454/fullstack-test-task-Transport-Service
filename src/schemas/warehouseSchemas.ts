@@ -5,8 +5,7 @@ export const warehouseSchema = z.object({
   name: z.string().min(2),
   address: z.string().min(2),
 });
+export type Warehouse = z.infer<typeof warehouseSchema>;
 
 export const warehouseCreateSchema = warehouseSchema.omit({ id: true });
-
-export type Warehouse = z.infer<typeof warehouseSchema>;
 export type WarehouseCreate = z.infer<typeof warehouseCreateSchema>;
