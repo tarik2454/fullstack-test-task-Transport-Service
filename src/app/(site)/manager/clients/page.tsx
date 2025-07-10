@@ -1,7 +1,8 @@
 "use client";
 
+import { FormLabel } from "@/components/FormLabel";
 import { Client, ClientCreate } from "@/schemas/clientSchemas";
-import { getClients, saveClient } from "@/utils/apiClient/client";
+import { deleteClient, getClients, saveClient } from "@/utils/apiClient/client";
 import { handleFormErrors } from "@/utils/zod/handleFormErrors";
 import { Button, Form, Input, message, Modal, Table } from "antd";
 import { useState, useEffect } from "react";
@@ -32,7 +33,6 @@ export default function ClientsPage() {
   }, []);
 
   const handleSave = async () => {
-    setLoading(true);
     const values = await form.validateFields();
 
     const res = await saveClient(values);
@@ -42,24 +42,22 @@ export default function ClientsPage() {
       return;
     }
 
-    message.success("Successfully saved");
+    message.success("Saved");
     fetchClients();
     setIsModalOpen(false);
     form.resetFields();
     setEditing(null);
-    setLoading(true);
   };
 
   const handleDelete = async (id: string) => {
-    const res = await fetch(`/api/clients/${id}`, { method: "DELETE" });
+    const res = await deleteClient(id);
 
-    if (!res.ok) {
-      const { error } = await res.json();
-      message.error(error);
+    if (!res.success) {
+      handleFormErrors(res.error);
       return;
     }
 
-    message.success("Successfully deleted");
+    message.success("Deleted");
     fetchClients();
   };
 
@@ -124,34 +122,16 @@ export default function ClientsPage() {
         }}
       >
         <Form layout="vertical" form={form}>
-          <Form.Item
-            name="name"
-            label={
-              <span className="flex items-center gap-[2px]">
-                Name <span className="text-red-500">*</span>
-              </span>
-            }
-          >
+          <Form.Item name="name" label={<FormLabel text="Name" required />}>
             <Input />
           </Form.Item>
           <Form.Item
             name="address"
-            label={
-              <span className="flex items-center gap-[2px]">
-                Address <span className="text-red-500">*</span>
-              </span>
-            }
+            label={<FormLabel text="Address" required />}
           >
             <Input />
           </Form.Item>
-          <Form.Item
-            name="phone"
-            label={
-              <span className="flex items-center gap-[2px]">
-                Phone <span className="text-red-500">*</span>
-              </span>
-            }
-          >
+          <Form.Item name="phone" label={<FormLabel text="Phone" required />}>
             <Input />
           </Form.Item>
         </Form>

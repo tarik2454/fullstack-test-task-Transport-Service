@@ -10,9 +10,3 @@ export type Client = z.infer<typeof clientSchema>;
 
 export const clientCreateSchema = clientSchema.omit({ id: true });
 export type ClientCreate = z.infer<typeof clientCreateSchema>;
-
-export const clientUpdateSchema = z.object({
-  name: z.string().min(2).optional(),
-  address: z.string().min(2).optional(),
-  phone: z.string().min(2).optional(),
-});

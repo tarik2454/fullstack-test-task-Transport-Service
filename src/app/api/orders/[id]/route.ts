@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { db } from "@/utils/prisma";
 import { errorResponse, successResponse } from "@/utils/server/apiResponse";
-import { orderUpdateSchema } from "@/schemas/orderSchemas";
+import { orderCreateSchema } from "@/schemas/orderSchemas";
 import { formatZodErrors } from "@/utils/zod/formatServerErrors";
 
 export async function PUT(
@@ -12,7 +12,9 @@ export async function PUT(
     const { id } = await params;
     const body = await req.json();
 
-    const parseResult = orderUpdateSchema.safeParse(body);
+    console.log(body);
+
+    const parseResult = orderCreateSchema.safeParse(body);
     if (!parseResult.success) {
       return errorResponse(formatZodErrors(parseResult.error), 400);
     }

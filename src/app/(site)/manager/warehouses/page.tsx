@@ -9,6 +9,7 @@ import {
   saveWarehouse,
 } from "@/utils/apiClient/warehouse";
 import { Warehouse } from "@/schemas/warehouseSchemas";
+import { FormLabel } from "@/components/FormLabel";
 
 export default function WarehousesPage() {
   const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
@@ -46,7 +47,7 @@ export default function WarehousesPage() {
       return;
     }
 
-    message.success("Successfully saved");
+    message.success("Saved");
     fetchWarehouses();
     setIsModalOpen(false);
     form.resetFields();
@@ -125,24 +126,13 @@ export default function WarehousesPage() {
         }}
       >
         <Form layout="vertical" form={form}>
-          <Form.Item
-            name="name"
-            label={
-              <span className="flex items-center gap-[2px]">
-                Name <span className="text-red-500">*</span>
-              </span>
-            }
-          >
+          <Form.Item name="name" label={<FormLabel text="Name" required />}>
             <Input />
           </Form.Item>
 
           <Form.Item
             name="address"
-            label={
-              <span className="flex items-center gap-[2px]">
-                Address <span className="text-red-500">*</span>
-              </span>
-            }
+            label={<FormLabel text="Address" required />}
           >
             <Input />
           </Form.Item>

@@ -2,32 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { Table, Button, Select, Form, Modal, message } from "antd";
-
-interface Order {
-  id: string;
-  status: string;
-  updatedAt: string;
-  client: Client;
-  warehouse: Warehouse;
-  manager: {
-    firstName: string;
-    lastName: string;
-  };
-  driver?: {
-    firstName: string;
-    lastName: string;
-  };
-}
-
-interface Client {
-  id: string;
-  name: string;
-}
-
-interface Warehouse {
-  id: string;
-  name: string;
-}
+import { FormLabel } from "@/components/FormLabel";
+import { deleteOrder, getOrders, saveOrder } from "@/utils/apiClient/order";
+import { getClients } from "@/utils/apiClient/client";
+import { getWarehouses } from "@/utils/apiClient/warehouse";
+import { OrderCreate } from "@/schemas/orderSchemas";
+import { Order } from "@/schemas/orderSchemas";
+import { Client } from "@/schemas/clientSchemas";
+import { Warehouse } from "@/schemas/warehouseSchemas";
+import { handleFormErrors } from "@/utils/zod/handleFormErrors";
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -41,37 +24,33 @@ export default function OrdersPage() {
   const fetchAll = async () => {
     setLoading(true);
 
-    const [ordersResult, clientsResult, warehousesResult] =
-      await Promise.allSettled([
-        fetch("/api/orders"),
-        fetch("/api/clients"),
-        fetch("/api/warehouses"),
-      ]);
+    const [ordersResult, clientsResult, warehousesResult] = await Promise.all([
+      getOrders(),
+      getClients(),
+      getWarehouses(),
+    ]);
 
-    if (ordersResult.status === "fulfilled" && ordersResult.value.ok) {
-      const ordersData = await ordersResult.value.json();
+    if (ordersResult.success) {
       setOrders(
-        ordersData.data
+        ordersResult.data
           .slice()
           .sort(
-            (a: Order, b: Order) =>
+            (a, b) =>
               new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
           )
       );
     } else {
-      message.warning("Failed to upload orders");
+      message.warning("Failed to load orders");
     }
 
-    if (clientsResult.status === "fulfilled" && clientsResult.value.ok) {
-      const clientsData = await clientsResult.value.json();
-      setClients(clientsData.data);
+    if (clientsResult.success) {
+      setClients(clientsResult.data);
     } else {
       message.warning("Failed to load clients");
     }
 
-    if (warehousesResult.status === "fulfilled" && warehousesResult.value.ok) {
-      const warehousesData = await warehousesResult.value.json();
-      setWarehouses(warehousesData.data);
+    if (warehousesResult.success) {
+      setWarehouses(warehousesResult.data);
     } else {
       message.warning("Failed to load warehouses");
     }
@@ -84,42 +63,37 @@ export default function OrdersPage() {
   }, []);
 
   const handleSave = async () => {
-    try {
-      const values = await form.validateFields();
+    const values = await form.validateFields();
 
-      const method = editing ? "PUT" : "POST";
-      const url = editing ? `/api/orders/${editing.id}` : "/api/orders";
+    const payload: OrderCreate = {
+      clientId: values.clientId,
+      warehouseId: values.warehouseId,
+      status: values.status,
+    };
 
-      const res = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
-      });
+    const res = await saveOrder(payload, editing ?? undefined);
 
-      if (!res.ok) {
-        const { error } = await res.json();
-        message.error(error);
-        return;
-      }
-
-      message.success(editing ? "Order updated" : "Order created");
-      fetchAll();
-      setIsModalOpen(false);
-      form.resetFields();
-      setEditing(null);
-    } catch {}
-  };
-
-  const handleDelete = async (id: string) => {
-    const res = await fetch(`/api/orders/${id}`, { method: "DELETE" });
-
-    if (!res.ok) {
-      const { error } = await res.json();
-      message.error(error);
+    if (!res.success) {
+      handleFormErrors(res.error, form);
       return;
     }
 
-    message.success("Order deleted");
+    message.success(editing ? "Updated" : "Created");
+    fetchAll();
+    setIsModalOpen(false);
+    form.resetFields();
+    setEditing(null);
+  };
+
+  const handleDelete = async (id: string) => {
+    const res = await deleteOrder(id);
+
+    if (!res.success) {
+      handleFormErrors(res.error, form);
+      return;
+    }
+
+    message.success("Deleted");
     fetchAll();
   };
 
@@ -209,8 +183,7 @@ export default function OrdersPage() {
         <Form layout="vertical" form={form}>
           <Form.Item
             name="clientId"
-            label="Client"
-            rules={[{ required: true, message: "Choose a client" }]}
+            label={<FormLabel text="Client" required />}
           >
             <Select
               placeholder="Choose a client"
@@ -219,8 +192,7 @@ export default function OrdersPage() {
           </Form.Item>
           <Form.Item
             name="warehouseId"
-            label="Warehouse"
-            rules={[{ required: true, message: "Choose a warehouse" }]}
+            label={<FormLabel text="Warehouse" required />}
           >
             <Select
               placeholder="Choose a warehouse"
@@ -229,9 +201,8 @@ export default function OrdersPage() {
           </Form.Item>
           <Form.Item
             name="status"
-            label="Status"
+            label={<FormLabel text="Status" required />}
             initialValue="NEW"
-            rules={[{ required: true }]}
           >
             <Select
               placeholder="Choose a status"

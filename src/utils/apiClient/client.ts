@@ -37,13 +37,13 @@ export async function saveClient(
   return { success: true, data: data };
 }
 
-// export async function deleteWarehouse(id: string): Promise<ApiResult<null>> {
-//   const res = await fetch(`/api/warehouses/${id}`, { method: "DELETE" });
-//   const { error } = await res.json();
+export async function deleteClient(id: string): Promise<ApiResult<null>> {
+  const res = await fetch(`/api/clients/${id}`, { method: "DELETE" });
+  const { error } = await res.json();
 
-//   if (!res.ok) {
-//     return { success: false, error: error };
-//   }
+  if (!res.ok) {
+    return { success: false, error: error };
+  }
 
-//   return { success: true, data: null };
-// }
+  return { success: true, data: null };
+}
