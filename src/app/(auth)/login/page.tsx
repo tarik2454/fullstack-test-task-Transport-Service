@@ -2,33 +2,32 @@
 
 import { useRouter } from "next/navigation";
 import { Form, Input, Button, message } from "antd";
-import { handleFormErrors } from "@/utils/handleFormErrors";
+import { handleErrors } from "@/utils/handleErrors";
 import Link from "next/link";
+import { FormLabel } from "@/components/FormLabel";
 
 export default function LoginPage() {
   const [form] = Form.useForm();
   const router = useRouter();
 
   const handleSubmit = async () => {
-    try {
-      const values = await form.validateFields();
+    const values = await form.validateFields();
 
-      const res = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
-      });
+    const res = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(values),
+    });
 
-      if (!res.ok) {
-        const { error } = await res.json();
-        handleFormErrors(error, form);
-        return;
-      }
+    if (!res.ok) {
+      const { error } = await res.json();
+      handleErrors(error, form);
+      return;
+    }
 
-      const { role } = await res.json();
-      message.success("Successful entry");
-      router.push(role === "MANAGER" ? "/manager/orders" : "/driver/orders");
-    } catch {}
+    const { role } = await res.json();
+    message.success("Successful entry");
+    router.push(role === "MANAGER" ? "/manager/orders" : "/driver/orders");
   };
 
   return (
@@ -44,16 +43,15 @@ export default function LoginPage() {
         >
           <Form.Item
             name="email"
-            label="Email"
-            rules={[{ required: true }, { type: "email" }]}
+            label={<FormLabel text="Email" required />}
+            rules={[{ type: "email" }]}
           >
             <Input />
           </Form.Item>
 
           <Form.Item
             name="password"
-            label="Password"
-            rules={[{ required: true }]}
+            label={<FormLabel text="Password" required />}
           >
             <Input.Password />
           </Form.Item>

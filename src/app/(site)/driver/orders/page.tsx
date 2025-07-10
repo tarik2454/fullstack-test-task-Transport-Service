@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Table, message, Select } from "antd";
 import { getDriverOrders, updateStatus } from "@/utils/apiClient/driver";
-import { handleFormErrors } from "@/utils/handleFormErrors";
+import { handleErrors } from "@/utils/handleErrors";
 
 interface Order {
   id: string;
@@ -29,7 +29,7 @@ export default function DriverOrdersPage() {
     const res = await getDriverOrders();
 
     if (!res.success) {
-      handleFormErrors(res.error);
+      handleErrors(res.error);
       return;
     }
 
@@ -45,7 +45,7 @@ export default function DriverOrdersPage() {
     const res = await updateStatus({ id, status });
 
     if (!res.success) {
-      handleFormErrors(res.error);
+      handleErrors(res.error);
       return;
     }
 
