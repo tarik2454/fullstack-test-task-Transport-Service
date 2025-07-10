@@ -3,7 +3,7 @@
 import { FormLabel } from "@/components/FormLabel";
 import { Client, ClientCreate } from "@/schemas/clientSchemas";
 import { deleteClient, getClients, saveClient } from "@/utils/apiClient/client";
-import { handleFormErrors } from "@/utils/zod/handleFormErrors";
+import { handleFormErrors } from "@/utils/handleFormErrors";
 import { Button, Form, Input, message, Modal, Table } from "antd";
 import { useState, useEffect } from "react";
 

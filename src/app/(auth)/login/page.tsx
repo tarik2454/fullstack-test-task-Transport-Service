@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { Form, Input, Button, message } from "antd";
-import { handleFormErrors } from "@/utils/zod/handleFormErrors";
+import { handleFormErrors } from "@/utils/handleFormErrors";
 import Link from "next/link";
 
 export default function LoginPage() {

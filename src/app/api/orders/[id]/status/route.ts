@@ -3,8 +3,8 @@ import { db } from "@/utils/prisma";
 import { OrderStatus } from "@prisma/client";
 import { errorResponse, successResponse } from "@/utils/server/apiResponse";
 import { withAuth } from "@/utils/auth/withAuth";
-import { orderStatusUpdateSchema } from "@/schemas/orderSchemas";
-import { formatZodErrors } from "@/utils/zod/formatServerErrors";
+import { formatZodErrors } from "@/utils/server/formatServerErrors";
+import { orderStatusUpdateSchema } from "@/schemas/commonOrderSchemas";
 
 export async function PATCH(
   req: NextRequest,

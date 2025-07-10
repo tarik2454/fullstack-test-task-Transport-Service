@@ -1,8 +1,8 @@
 import { NextRequest } from "next/server";
 import { db } from "@/utils/prisma";
 import { errorResponse, successResponse } from "@/utils/server/apiResponse";
-import { orderCreateSchema } from "@/schemas/orderSchemas";
-import { formatZodErrors } from "@/utils/zod/formatServerErrors";
+import { orderCreateSchema } from "@/schemas/commonOrderSchemas";
+import { formatZodErrors } from "@/utils/server/formatServerErrors";
 
 export async function PUT(
   req: NextRequest,
@@ -11,8 +11,6 @@ export async function PUT(
   try {
     const { id } = await params;
     const body = await req.json();
-
-    console.log(body);
 
     const parseResult = orderCreateSchema.safeParse(body);
     if (!parseResult.success) {

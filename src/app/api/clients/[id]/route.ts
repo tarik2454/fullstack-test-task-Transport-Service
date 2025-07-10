@@ -3,7 +3,7 @@ import { db } from "@/utils/prisma";
 import { Prisma } from "@prisma/client";
 import { errorResponse } from "@/utils/server/apiResponse";
 import { clientUpdateSchema } from "@/schemas/clientSchemas";
-import { formatZodErrors } from "@/utils/zod/formatServerErrors";
+import { formatZodErrors } from "@/utils/server/formatServerErrors";
 
 export async function PUT(
   req: NextRequest,

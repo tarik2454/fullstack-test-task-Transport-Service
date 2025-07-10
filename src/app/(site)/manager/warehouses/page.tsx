@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Table, Button, Modal, Form, Input, message } from "antd";
-import { handleFormErrors } from "@/utils/zod/handleFormErrors";
+import { handleFormErrors } from "@/utils/handleFormErrors";
 import {
   deleteWarehouse,
   getWarehouses,

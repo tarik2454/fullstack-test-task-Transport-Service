@@ -1,4 +1,4 @@
-import { Order, OrderCreate } from "@/schemas/orderSchemas";
+import { Order, OrderCreate } from "@/schemas/commonOrderSchemas";
 
 type ApiResult<T> =
   | { success: true; data: T }

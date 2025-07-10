@@ -2,8 +2,8 @@ import { withAuth } from "@/utils/auth/withAuth";
 import { NextRequest } from "next/server";
 import { db } from "@/utils/prisma";
 import { errorResponse, successResponse } from "@/utils/server/apiResponse";
-import { orderCreateSchema } from "@/schemas/orderSchemas";
-import { formatZodErrors } from "@/utils/zod/formatServerErrors";
+import { orderCreateSchema } from "@/schemas/commonOrderSchemas";
+import { formatZodErrors } from "@/utils/server/formatServerErrors";
 
 export async function GET() {
   try {

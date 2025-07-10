@@ -6,11 +6,11 @@ import { FormLabel } from "@/components/FormLabel";
 import { deleteOrder, getOrders, saveOrder } from "@/utils/apiClient/order";
 import { getClients } from "@/utils/apiClient/client";
 import { getWarehouses } from "@/utils/apiClient/warehouse";
-import { OrderCreate } from "@/schemas/orderSchemas";
-import { Order } from "@/schemas/orderSchemas";
+import { OrderCreate } from "@/schemas/commonOrderSchemas";
+import { Order } from "@/schemas/commonOrderSchemas";
 import { Client } from "@/schemas/clientSchemas";
 import { Warehouse } from "@/schemas/warehouseSchemas";
-import { handleFormErrors } from "@/utils/zod/handleFormErrors";
+import { handleFormErrors } from "@/utils/handleFormErrors";
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);

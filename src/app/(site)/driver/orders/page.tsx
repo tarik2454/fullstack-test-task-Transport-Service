@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { Table, message, Select } from "antd";
+import { getDriverOrders, updateStatus } from "@/utils/apiClient/driver";
+import { handleFormErrors } from "@/utils/handleFormErrors";
 
 interface Order {
   id: string;
@@ -24,16 +26,14 @@ export default function DriverOrdersPage() {
   const fetchOrders = async () => {
     setLoading(true);
 
-    const res = await fetch("/api/driver/orders");
-    const { data } = await res.json();
+    const res = await getDriverOrders();
 
-    if (!res.ok) {
-      message.error("Failed to load orders");
+    if (!res.success) {
+      handleFormErrors(res.error);
       return;
     }
 
-    setOrders(data);
-
+    setOrders(res.data);
     setLoading(false);
   };
 
@@ -41,20 +41,15 @@ export default function DriverOrdersPage() {
     fetchOrders();
   }, []);
 
-  const updateStatus = async (id: string, status: string) => {
-    const res = await fetch(`/api/orders/${id}/status`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status }),
-    });
+  const handleUpdateStatus = async (id: string, status: string) => {
+    const res = await updateStatus({ id, status });
 
-    if (!res.ok) {
-      const { error } = await res.json();
-      message.error(error);
+    if (!res.success) {
+      handleFormErrors(res.error);
       return;
     }
 
-    message.success("Order status updated");
+    message.success("Updated");
     fetchOrders();
   };
 
@@ -84,7 +79,7 @@ export default function DriverOrdersPage() {
             render: (status: string, record: Order) => (
               <Select
                 value={status}
-                onChange={(value) => updateStatus(record.id, value)}
+                onChange={(value) => handleUpdateStatus(record.id, value)}
                 options={statusOptions}
                 disabled={status === "COMPLETED"}
                 size="small"

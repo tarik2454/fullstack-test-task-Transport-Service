@@ -3,7 +3,7 @@ import { NextRequest } from "next/server";
 import { db } from "@/utils/prisma";
 import { errorResponse, successResponse } from "@/utils/server/apiResponse";
 import { clientSchema } from "@/schemas/clientSchemas";
-import { formatZodErrors } from "@/utils/zod/formatServerErrors";
+import { formatZodErrors } from "@/utils/server/formatServerErrors";
 
 export async function GET() {
   try {

@@ -2,7 +2,7 @@ import { NextRequest } from "next/server";
 import { db } from "@/utils/prisma";
 import { Prisma } from "@prisma/client";
 import { errorResponse, successResponse } from "@/utils/server/apiResponse";
-import { formatZodErrors } from "@/utils/zod/formatServerErrors";
+import { formatZodErrors } from "@/utils/server/formatServerErrors";
 import { warehouseCreateSchema } from "@/schemas/warehouseSchemas";
 
 export async function PUT(

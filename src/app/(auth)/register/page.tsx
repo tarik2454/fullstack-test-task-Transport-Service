@@ -1,9 +1,8 @@
 "use client";
 
-import React from "react";
 import { Form, Input, Button, Select, message } from "antd";
 import { useRouter } from "next/navigation";
-import { handleFormErrors } from "@/utils/zod/handleFormErrors";
+import { handleFormErrors } from "@/utils/handleFormErrors";
 import Link from "next/link";
 
 const { Option } = Select;

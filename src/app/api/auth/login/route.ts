@@ -3,7 +3,7 @@ import { compare } from "bcryptjs";
 import { sign } from "jsonwebtoken";
 import { NextResponse } from "next/server";
 import { errorResponse } from "@/utils/server/apiResponse";
-import { formatZodErrors } from "@/utils/zod/formatServerErrors";
+import { formatZodErrors } from "@/utils/server/formatServerErrors";
 import { loginSchema } from "@/schemas/authSchemas";
 
 const JWT_SECRET = process.env.JWT_SECRET || "secret";
