@@ -1,6 +1,6 @@
 import { db } from "@/utils/prisma";
 import { compare } from "bcryptjs";
-import { sign } from "jsonwebtoken";
+import { SignJWT } from "jose";
 import { NextResponse } from "next/server";
 import { errorResponse } from "@/utils/server/apiResponse";
 import { formatZodErrors } from "@/utils/server/formatServerErrors";
@@ -23,9 +23,17 @@ export async function POST(req: Request) {
       return errorResponse("Incorrect email or password", 401);
     }
 
-    const token = sign({ id: user.id, role: user.role }, JWT_SECRET, {
-      expiresIn: "7d",
-    });
+    const secret = new TextEncoder().encode(JWT_SECRET);
+
+    const token = await new SignJWT({
+      id: user.id,
+      role: user.role,
+      email: user.email,
+    })
+      .setProtectedHeader({ alg: "HS256" })
+      .setIssuedAt()
+      .setExpirationTime("7d")
+      .sign(secret);
 
     const res = NextResponse.json({ role: user.role });
 

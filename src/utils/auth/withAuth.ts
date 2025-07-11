@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import { verifyToken } from "./auth";
+import { verifyToken } from "./verifyToken";
 
 type JwtPayload = {
   id: string;

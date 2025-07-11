@@ -6,6 +6,7 @@ export async function verifyToken(token: string) {
       token,
       new TextEncoder().encode(process.env.JWT_SECRET || "secret")
     );
+
     return payload;
   } catch {
     return null;

@@ -1,21 +1,37 @@
 "use client";
 
+import { handleErrors } from "@/utils/handleErrors";
 import Link from "next/link";
-import { useRouter, usePathname } from "next/navigation";
-import { ReactNode } from "react";
+import { useRouter } from "next/navigation";
+import { ReactNode, useEffect, useState } from "react";
+
+type UserPayload = {
+  id: string;
+  role: "MANAGER" | "DRIVER";
+  email: string;
+};
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
+  const [user, setUser] = useState<UserPayload | null>(null);
+
   const router = useRouter();
-  const pathname = usePathname();
 
-  const firstSegment = pathname.split("/")[1];
+  useEffect(() => {
+    const getUser = async () => {
+      const res = await fetch("/api/auth/current");
 
-  const role =
-    firstSegment === "manager"
-      ? "MANAGER"
-      : firstSegment === "driver"
-      ? "DRIVER"
-      : null;
+      const data = await res.json();
+
+      if (!res.ok) {
+        handleErrors(data.error);
+        return;
+      }
+
+      setUser(data.user);
+    };
+
+    getUser();
+  }, [router]);
 
   const handleLogout = async () => {
     await fetch("/api/auth/logout", { method: "POST" });
@@ -25,7 +41,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-gray-50">
       <nav className="bg-white shadow px-6 py-4 flex justify-between">
-        {role === "MANAGER" && (
+        {user?.role === "MANAGER" && (
           <div className="flex gap-4">
             <Link
               href="/manager/orders"
@@ -48,7 +64,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           </div>
         )}
 
-        {role === "DRIVER" && (
+        {user?.role === "DRIVER" && (
           <div className="flex gap-4">
             <Link
               href="/driver/orders"
@@ -60,7 +76,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         )}
 
         <div className="flex items-center gap-4">
-          <p>{firstSegment}</p>
+          <p>{user?.email}</p>
           <button
             onClick={handleLogout}
             className="text-blue-500 hover:underline cursor-pointer"
