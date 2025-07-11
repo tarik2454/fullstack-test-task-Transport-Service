@@ -1,7 +1,7 @@
 "use client";
 
 import { FormLabel } from "@/components/FormLabel";
-import { Client, ClientCreate } from "@/schemas/clientSchemas";
+import { Client } from "@/schemas/clientSchemas";
 import { deleteClient, getClients, saveClient } from "@/utils/apiClient/client";
 import { handleErrors } from "@/utils/handleErrors";
 import { Button, Form, Input, message, Modal, Table } from "antd";
@@ -11,7 +11,7 @@ export default function ClientsPage() {
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editing, setEditing] = useState<ClientCreate | null>(null);
+  const [editing, setEditing] = useState<Client | undefined>(undefined);
   const [form] = Form.useForm();
 
   const fetchClients = async () => {
@@ -35,7 +35,9 @@ export default function ClientsPage() {
   const handleSave = async () => {
     const values = await form.validateFields();
 
-    const res = await saveClient(values);
+    const payload = editing ? { ...values, id: editing.id } : values;
+
+    const res = await saveClient(payload, editing);
 
     if (!res.success) {
       handleErrors(res.error, form);
@@ -46,7 +48,7 @@ export default function ClientsPage() {
     fetchClients();
     setIsModalOpen(false);
     form.resetFields();
-    setEditing(null);
+    setEditing(undefined);
   };
 
   const handleDelete = async (id: string) => {
@@ -118,7 +120,7 @@ export default function ClientsPage() {
         onCancel={() => {
           setIsModalOpen(false);
           form.resetFields();
-          setEditing(null);
+          setEditing(undefined);
         }}
       >
         <Form layout="vertical" form={form}>

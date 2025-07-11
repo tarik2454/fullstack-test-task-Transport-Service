@@ -5,15 +5,29 @@ import { useRouter } from "next/navigation";
 import { handleErrors } from "@/utils/handleErrors";
 import Link from "next/link";
 import { FormLabel } from "@/components/FormLabel";
+import { ZodError } from "zod";
+import { registerSchema } from "@/schemas/authSchemas";
 
 const { Option } = Select;
+
+export function zodToFieldErrors(error: ZodError) {
+  return Object.fromEntries(
+    error.errors.map((err) => [err.path.join("."), [err.message]])
+  );
+}
 
 export default function RegisterPage() {
   const [form] = Form.useForm();
   const router = useRouter();
 
   const handleSubmit = async () => {
-    const values = await form.validateFields();
+    const values = form.getFieldsValue();
+
+    const parseResult = registerSchema.safeParse(values);
+    if (!parseResult.success) {
+      handleErrors(zodToFieldErrors(parseResult.error), form);
+      return;
+    }
 
     const res = await fetch("/api/auth/register", {
       method: "POST",
@@ -21,10 +35,10 @@ export default function RegisterPage() {
       body: JSON.stringify(values),
     });
 
-    const data = await res.json();
+    // const data = await res.json();
 
     if (!res.ok) {
-      handleErrors(data.error, form);
+      // handleErrors(data.error, form);
       return;
     }
 
@@ -70,6 +84,7 @@ export default function RegisterPage() {
           <Form.Item
             name="password"
             label={<FormLabel text="Password" required />}
+            rules={[]}
           >
             <Input.Password />
           </Form.Item>

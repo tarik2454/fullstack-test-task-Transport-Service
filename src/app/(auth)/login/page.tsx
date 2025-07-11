@@ -4,14 +4,28 @@ import { useRouter } from "next/navigation";
 import { Form, Input, Button, message } from "antd";
 import { handleErrors } from "@/utils/handleErrors";
 import Link from "next/link";
-import { FormLabel } from "@/components/FormLabel"; //8950
+import { FormLabel } from "@/components/FormLabel";
+import { loginSchema } from "@/schemas/authSchemas";
+import { ZodError } from "zod";
+
+export function zodToFieldErrors(error: ZodError) {
+  return Object.fromEntries(
+    error.errors.map((err) => [err.path.join("."), [err.message]])
+  );
+}
 
 export default function LoginPage() {
   const [form] = Form.useForm();
   const router = useRouter();
 
   const handleSubmit = async () => {
-    const values = await form.validateFields();
+    const values = form.getFieldsValue();
+
+    const parseResult = loginSchema.safeParse(values);
+    if (!parseResult.success) {
+      handleErrors(zodToFieldErrors(parseResult.error), form);
+      return;
+    }
 
     const res = await fetch("/api/auth/login", {
       method: "POST",
@@ -20,8 +34,8 @@ export default function LoginPage() {
     });
 
     if (!res.ok) {
-      const { error } = await res.json();
-      handleErrors(error, form);
+      // const { error } = await res.json();
+      // handleErrors(error, form);
       return;
     }
 

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/utils/prisma";
 import { Prisma } from "@prisma/client";
 import { errorResponse } from "@/utils/server/apiResponse";
-import { clientUpdateSchema } from "@/schemas/clientSchemas";
+import { clientSchema } from "@/schemas/clientSchemas";
 import { formatZodErrors } from "@/utils/server/formatServerErrors";
 
 export async function PUT(
@@ -13,13 +13,15 @@ export async function PUT(
     const { id } = await params;
     const body = await req.json();
 
-    const parseResult = clientUpdateSchema.safeParse(body);
+    console.log(body);
+
+    const parseResult = clientSchema.safeParse(body);
     if (!parseResult.success) {
       return errorResponse(formatZodErrors(parseResult.error), 400);
     }
 
     const client = await db.client.update({
-      where: { id: id },
+      where: { id },
       data: parseResult.data,
     });
     return NextResponse.json(client);
@@ -42,7 +44,7 @@ export async function DELETE(
       error.code === "P2003"
     ) {
       return errorResponse(
-        "Невозможно удалить клиента: есть связанные заказы",
+        "Unable to delete a customer: there are related orders",
         409
       );
     }

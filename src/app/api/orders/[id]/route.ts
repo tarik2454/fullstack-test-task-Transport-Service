@@ -19,7 +19,7 @@ export async function PUT(
 
     const order = await db.order.update({
       where: { id },
-      data: body,
+      data: parseResult.data,
       include: { warehouse: true, client: true },
     });
 

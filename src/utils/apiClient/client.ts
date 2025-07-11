@@ -34,7 +34,7 @@ export async function saveClient(
     return { success: false, error: error };
   }
 
-  return { success: true, data: data };
+  return { success: true, data };
 }
 
 export async function deleteClient(id: string): Promise<ApiResult<null>> {

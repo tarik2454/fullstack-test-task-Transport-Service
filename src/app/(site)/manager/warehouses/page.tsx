@@ -38,6 +38,7 @@ export default function WarehousesPage() {
 
   const handleSave = async () => {
     const values = await form.validateFields();
+
     const payload = editing ? { ...values, id: editing.id } : values;
 
     const res = await saveWarehouse(payload, editing);
