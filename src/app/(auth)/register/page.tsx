@@ -2,18 +2,24 @@
 
 import { Form, Input, Button, Select, message } from "antd";
 import { useRouter } from "next/navigation";
-import { handleErrors } from "@/utils/handleErrors";
 import Link from "next/link";
 import { FormLabel } from "@/components/FormLabel";
-import { ZodError } from "zod";
 import { registerSchema } from "@/schemas/authSchemas";
+// import { handleErrors } from "@/utils/handleErrors";
 
 const { Option } = Select;
 
-export function zodToFieldErrors(error: ZodError) {
-  return Object.fromEntries(
-    error.errors.map((err) => [err.path.join("."), [err.message]])
-  );
+import { ZodTypeAny } from "zod";
+
+export function getValidationRule(schema: ZodTypeAny) {
+  return async (_: unknown, value: unknown) => {
+    const result = schema.safeParse(value);
+    if (result.success) {
+      return Promise.resolve();
+    }
+    const firstError = result.error.errors[0];
+    return Promise.reject(new Error(firstError.message));
+  };
 }
 
 export default function RegisterPage() {
@@ -23,22 +29,13 @@ export default function RegisterPage() {
   const handleSubmit = async () => {
     const values = form.getFieldsValue();
 
-    const parseResult = registerSchema.safeParse(values);
-    if (!parseResult.success) {
-      handleErrors(zodToFieldErrors(parseResult.error), form);
-      return;
-    }
-
     const res = await fetch("/api/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(values),
     });
 
-    // const data = await res.json();
-
     if (!res.ok) {
-      // handleErrors(data.error, form);
       return;
     }
 
@@ -62,6 +59,9 @@ export default function RegisterPage() {
           <Form.Item
             name="firstName"
             label={<FormLabel text="Name" required />}
+            rules={[
+              { validator: getValidationRule(registerSchema.shape.firstName) },
+            ]}
           >
             <Input />
           </Form.Item>
@@ -69,6 +69,9 @@ export default function RegisterPage() {
           <Form.Item
             name="lastName"
             label={<FormLabel text="Last name" required />}
+            rules={[
+              { validator: getValidationRule(registerSchema.shape.lastName) },
+            ]}
           >
             <Input />
           </Form.Item>
@@ -76,7 +79,9 @@ export default function RegisterPage() {
           <Form.Item
             name="email"
             label={<FormLabel text="Email" required />}
-            rules={[{ type: "email" }]}
+            rules={[
+              { validator: getValidationRule(registerSchema.shape.email) },
+            ]}
           >
             <Input />
           </Form.Item>
@@ -84,12 +89,20 @@ export default function RegisterPage() {
           <Form.Item
             name="password"
             label={<FormLabel text="Password" required />}
-            rules={[]}
+            rules={[
+              { validator: getValidationRule(registerSchema.shape.password) },
+            ]}
           >
             <Input.Password />
           </Form.Item>
 
-          <Form.Item name="role" label={<FormLabel text="Role" required />}>
+          <Form.Item
+            name="role"
+            label={<FormLabel text="Role" required />}
+            rules={[
+              { validator: getValidationRule(registerSchema.shape.role) },
+            ]}
+          >
             <Select placeholder="Сhoose your role">
               <Option value="MANAGER">Manager</Option>
               <Option value="DRIVER">Driver</Option>
