@@ -13,8 +13,6 @@ export async function PUT(
     const { id } = await params;
     const body = await req.json();
 
-    console.log(body);
-
     const parseResult = clientSchema.safeParse(body);
     if (!parseResult.success) {
       return errorResponse(formatZodErrors(parseResult.error), 400);

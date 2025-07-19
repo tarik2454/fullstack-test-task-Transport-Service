@@ -19,7 +19,13 @@ export async function POST(req: Request) {
 
     const user = await db.user.findUnique({ where: { email: body.email } });
 
-    if (!user || !(await compare(body.password, user.password))) {
+    if (!user) {
+      return errorResponse("Incorrect email or password", 401);
+    }
+
+    const isPasswordCorrect = await compare(body.password, user.password);
+
+    if (!isPasswordCorrect) {
       return errorResponse("Incorrect email or password", 401);
     }
 

@@ -5,23 +5,9 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { FormLabel } from "@/components/FormLabel";
 import { registerSchema } from "@/schemas/authSchemas";
-import { handleErrors } from "@/utils/handleErrors";
+import { getValidationRules, handleFormErrors } from "@/utils/formValidation";
 
 const { Option } = Select;
-
-import { ZodObject, ZodRawShape } from "zod";
-
-function getRules<T extends ZodRawShape>(schema: ZodObject<T>, field: keyof T) {
-  return [
-    {
-      validator: async (_: unknown, value: unknown) => {
-        const result = schema.shape[field].safeParse(value);
-        if (result.success) return Promise.resolve();
-        return Promise.reject(new Error(result.error.errors[0].message));
-      },
-    },
-  ];
-}
 
 export default function RegisterPage() {
   const [form] = Form.useForm();
@@ -39,7 +25,7 @@ export default function RegisterPage() {
     const { data, error } = await res.json();
 
     if (!res.ok) {
-      handleErrors(error, form);
+      handleFormErrors(error, form);
       return;
     }
 
@@ -63,7 +49,7 @@ export default function RegisterPage() {
           <Form.Item
             name="firstName"
             label={<FormLabel text="Name" required />}
-            rules={getRules(registerSchema, "firstName")}
+            rules={getValidationRules(registerSchema, "firstName")}
           >
             <Input />
           </Form.Item>
@@ -71,7 +57,7 @@ export default function RegisterPage() {
           <Form.Item
             name="lastName"
             label={<FormLabel text="Last name" required />}
-            rules={getRules(registerSchema, "lastName")}
+            rules={getValidationRules(registerSchema, "lastName")}
           >
             <Input />
           </Form.Item>
@@ -79,7 +65,7 @@ export default function RegisterPage() {
           <Form.Item
             name="email"
             label={<FormLabel text="Email" required />}
-            rules={getRules(registerSchema, "email")}
+            rules={getValidationRules(registerSchema, "email")}
           >
             <Input />
           </Form.Item>
@@ -87,7 +73,7 @@ export default function RegisterPage() {
           <Form.Item
             name="password"
             label={<FormLabel text="Password" required />}
-            rules={getRules(registerSchema, "password")}
+            rules={getValidationRules(registerSchema, "password")}
           >
             <Input.Password />
           </Form.Item>
@@ -95,7 +81,7 @@ export default function RegisterPage() {
           <Form.Item
             name="role"
             label={<FormLabel text="Role" required />}
-            rules={getRules(registerSchema, "role")}
+            rules={getValidationRules(registerSchema, "role")}
           >
             <Select placeholder="Choose your role">
               <Option value="MANAGER">Manager</Option>

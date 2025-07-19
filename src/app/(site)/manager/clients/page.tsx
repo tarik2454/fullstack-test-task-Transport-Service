@@ -3,7 +3,7 @@
 import { FormLabel } from "@/components/FormLabel";
 import { Client } from "@/schemas/clientSchemas";
 import { deleteClient, getClients, saveClient } from "@/utils/apiClient/client";
-import { handleErrors } from "@/utils/handleErrors";
+import { handleFormErrors } from "@/utils/formValidation";
 import { Button, Form, Input, message, Modal, Table } from "antd";
 import { useState, useEffect } from "react";
 
@@ -20,7 +20,7 @@ export default function ClientsPage() {
     const res = await getClients();
 
     if (!res.success) {
-      handleErrors(res.error);
+      handleFormErrors(res.error);
       return;
     }
 
@@ -40,7 +40,7 @@ export default function ClientsPage() {
     const res = await saveClient(payload, editing);
 
     if (!res.success) {
-      handleErrors(res.error, form);
+      handleFormErrors(res.error, form);
       return;
     }
 
@@ -55,7 +55,7 @@ export default function ClientsPage() {
     const res = await deleteClient(id);
 
     if (!res.success) {
-      handleErrors(res.error);
+      handleFormErrors(res.error);
       return;
     }
 

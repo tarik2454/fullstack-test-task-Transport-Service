@@ -1,6 +1,6 @@
 "use client";
 
-import { handleErrors } from "@/utils/handleErrors";
+import { handleFormErrors } from "@/utils/formValidation";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ReactNode, useEffect, useState } from "react";
@@ -23,7 +23,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       const data = await res.json();
 
       if (!res.ok) {
-        handleErrors(data.error);
+        handleFormErrors(data.error);
         return;
       }
 

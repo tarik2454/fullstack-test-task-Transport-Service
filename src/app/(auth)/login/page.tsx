@@ -2,17 +2,10 @@
 
 import { useRouter } from "next/navigation";
 import { Form, Input, Button, message } from "antd";
-import { handleErrors } from "@/utils/handleErrors";
 import Link from "next/link";
 import { FormLabel } from "@/components/FormLabel";
 import { loginSchema } from "@/schemas/authSchemas";
-import { ZodError } from "zod";
-
-export function zodToFieldErrors(error: ZodError) {
-  return Object.fromEntries(
-    error.errors.map((err) => [err.path.join("."), [err.message]])
-  );
-}
+import { handleFormErrors, getValidationRules } from "@/utils/formValidation";
 
 export default function LoginPage() {
   const [form] = Form.useForm();
@@ -21,26 +14,21 @@ export default function LoginPage() {
   const handleSubmit = async () => {
     const values = form.getFieldsValue();
 
-    const parseResult = loginSchema.safeParse(values);
-    if (!parseResult.success) {
-      handleErrors(zodToFieldErrors(parseResult.error), form);
-      return;
-    }
-
     const res = await fetch("/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(values),
     });
 
+    const { data, error } = await res.json();
+
     if (!res.ok) {
-      // const { error } = await res.json();
-      // handleErrors(error, form);
+      handleFormErrors(error, form);
       return;
     }
 
     const { role } = await res.json();
-    message.success("Successful entry");
+    message.success(`Welcome, ${data.user.email}!`);
     router.push(role === "MANAGER" ? "/manager/orders" : "/driver/orders");
   };
 
@@ -57,15 +45,16 @@ export default function LoginPage() {
         >
           <Form.Item
             name="email"
-            label={<FormLabel text="Email" required />}
-            rules={[{ type: "email" }]}
+            label={<FormLabel text="Email" />}
+            rules={getValidationRules(loginSchema, "email")}
           >
             <Input />
           </Form.Item>
 
           <Form.Item
             name="password"
-            label={<FormLabel text="Password" required />}
+            label={<FormLabel text="Password" />}
+            rules={getValidationRules(loginSchema, "password")}
           >
             <Input.Password />
           </Form.Item>

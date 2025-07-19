@@ -10,7 +10,7 @@ import { OrderCreate } from "@/schemas/commonOrderSchemas";
 import { Order } from "@/schemas/commonOrderSchemas";
 import { Client } from "@/schemas/clientSchemas";
 import { Warehouse } from "@/schemas/warehouseSchemas";
-import { handleErrors } from "@/utils/handleErrors";
+import { handleFormErrors } from "@/utils/formValidation";
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -74,7 +74,7 @@ export default function OrdersPage() {
     const res = await saveOrder(payload, editing ?? undefined);
 
     if (!res.success) {
-      handleErrors(res.error, form);
+      handleFormErrors(res.error, form);
       return;
     }
 
@@ -89,7 +89,7 @@ export default function OrdersPage() {
     const res = await deleteOrder(id);
 
     if (!res.success) {
-      handleErrors(res.error, form);
+      handleFormErrors(res.error, form);
       return;
     }
 

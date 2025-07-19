@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { Table, Button, Modal, Form, Input, message } from "antd";
-import { handleErrors } from "@/utils/handleErrors";
 import {
   deleteWarehouse,
   getWarehouses,
@@ -10,6 +9,7 @@ import {
 } from "@/utils/apiClient/warehouse";
 import { Warehouse } from "@/schemas/warehouseSchemas";
 import { FormLabel } from "@/components/FormLabel";
+import { handleFormErrors } from "@/utils/formValidation";
 
 export default function WarehousesPage() {
   const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
@@ -24,7 +24,7 @@ export default function WarehousesPage() {
     const res = await getWarehouses();
 
     if (!res.success) {
-      handleErrors(res.error);
+      handleFormErrors(res.error);
       return;
     }
 
@@ -44,7 +44,7 @@ export default function WarehousesPage() {
     const res = await saveWarehouse(payload, editing);
 
     if (!res.success) {
-      handleErrors(res.error, form);
+      handleFormErrors(res.error, form);
       return;
     }
 
@@ -59,7 +59,7 @@ export default function WarehousesPage() {
     const res = await deleteWarehouse(id);
 
     if (!res.success) {
-      handleErrors(res.error);
+      handleFormErrors(res.error);
       return;
     }
 
