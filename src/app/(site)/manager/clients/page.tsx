@@ -1,17 +1,17 @@
 "use client";
 
 import { FormLabel } from "@/components/FormLabel";
-import { Client } from "@/schemas/clientSchemas";
+import { clientCreateSchema, ClientData } from "@/schemas/clientSchemas";
 import { deleteClient, getClients, saveClient } from "@/utils/apiClient/client";
-import { handleFormErrors } from "@/utils/formValidation";
+import { getValidationRules, handleFormErrors } from "@/utils/formValidation";
 import { Button, Form, Input, message, Modal, Table } from "antd";
 import { useState, useEffect } from "react";
 
 export default function ClientsPage() {
-  const [clients, setClients] = useState<Client[]>([]);
+  const [clients, setClients] = useState<ClientData[]>([]);
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editing, setEditing] = useState<Client | undefined>(undefined);
+  const [editing, setEditing] = useState<ClientData | undefined>(undefined);
   const [form] = Form.useForm();
 
   const fetchClients = async () => {
@@ -33,7 +33,7 @@ export default function ClientsPage() {
   }, []);
 
   const handleSave = async () => {
-    const values = await form.validateFields();
+    const values = form.getFieldsValue() as ClientData;
 
     const payload = editing ? { ...values, id: editing.id } : values;
 
@@ -80,7 +80,7 @@ export default function ClientsPage() {
             title: "#",
             dataIndex: "index",
             key: "index",
-            render: (_: unknown, __: Client, index: number) => index + 1,
+            render: (_: unknown, __: ClientData, index: number) => index + 1,
             width: 50,
           },
           { title: "Name", dataIndex: "name" },
@@ -124,16 +124,25 @@ export default function ClientsPage() {
         }}
       >
         <Form layout="vertical" form={form}>
-          <Form.Item name="name" label={<FormLabel text="Name" required />}>
+          <Form.Item
+            name="name"
+            label={<FormLabel text="Name" required />}
+            rules={getValidationRules(clientCreateSchema, "name")}
+          >
             <Input />
           </Form.Item>
           <Form.Item
             name="address"
             label={<FormLabel text="Address" required />}
+            rules={getValidationRules(clientCreateSchema, "address")}
           >
             <Input />
           </Form.Item>
-          <Form.Item name="phone" label={<FormLabel text="Phone" required />}>
+          <Form.Item
+            name="phone"
+            label={<FormLabel text="Phone" required />}
+            rules={getValidationRules(clientCreateSchema, "phone")}
+          >
             <Input />
           </Form.Item>
         </Form>

@@ -6,19 +6,19 @@ import { FormLabel } from "@/components/FormLabel";
 import { deleteOrder, getOrders, saveOrder } from "@/utils/apiClient/order";
 import { getClients } from "@/utils/apiClient/client";
 import { getWarehouses } from "@/utils/apiClient/warehouse";
-import { OrderCreate } from "@/schemas/commonOrderSchemas";
-import { Order } from "@/schemas/commonOrderSchemas";
-import { Client } from "@/schemas/clientSchemas";
-import { Warehouse } from "@/schemas/warehouseSchemas";
-import { handleFormErrors } from "@/utils/formValidation";
+import { OrderCreate, orderCreateSchema } from "@/schemas/commonOrderSchemas";
+import { OrderData } from "@/schemas/commonOrderSchemas";
+import { ClientData } from "@/schemas/clientSchemas";
+import { WarehouseData } from "@/schemas/warehouseSchemas";
+import { getValidationRules, handleFormErrors } from "@/utils/formValidation";
 
 export default function OrdersPage() {
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [clients, setClients] = useState<Client[]>([]);
-  const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
+  const [orders, setOrders] = useState<OrderData[]>([]);
+  const [clients, setClients] = useState<ClientData[]>([]);
+  const [warehouses, setWarehouses] = useState<WarehouseData[]>([]);
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editing, setEditing] = useState<Order | null>(null);
+  const [editing, setEditing] = useState<OrderData | null>(null);
   const [form] = Form.useForm();
 
   const fetchAll = async () => {
@@ -63,9 +63,9 @@ export default function OrdersPage() {
   }, []);
 
   const handleSave = async () => {
-    const values = await form.validateFields();
+    const values = form.getFieldsValue() as OrderCreate;
 
-    const payload: OrderCreate = {
+    const payload = {
       clientId: values.clientId,
       warehouseId: values.warehouseId,
       status: values.status,
@@ -116,7 +116,7 @@ export default function OrdersPage() {
             title: "#",
             dataIndex: "index",
             key: "index",
-            render: (_: unknown, __: Order, index: number) => index + 1,
+            render: (_: unknown, __: OrderData, index: number) => index + 1,
             width: 50,
           },
           {
@@ -130,13 +130,13 @@ export default function OrdersPage() {
           {
             title: "Manager",
             dataIndex: "manager",
-            render: (manager: Order["manager"]) =>
+            render: (manager: OrderData["manager"]) =>
               `${manager.firstName} ${manager.lastName}`,
           },
           {
             title: "Driver",
             dataIndex: "driver",
-            render: (driver?: Order["driver"]) =>
+            render: (driver?: OrderData["driver"]) =>
               driver ? `${driver.firstName} ${driver.lastName}` : "—",
           },
           {
@@ -145,7 +145,7 @@ export default function OrdersPage() {
           },
           {
             title: "Actions",
-            render: (_, record: Order) => (
+            render: (_, record: OrderData) => (
               <div className="flex gap-2">
                 <Button
                   size="small"
@@ -184,6 +184,8 @@ export default function OrdersPage() {
           <Form.Item
             name="clientId"
             label={<FormLabel text="Client" required />}
+            rules={getValidationRules(orderCreateSchema, "clientId")}
+            validateTrigger="onChange"
           >
             <Select
               placeholder="Choose a client"
@@ -193,6 +195,8 @@ export default function OrdersPage() {
           <Form.Item
             name="warehouseId"
             label={<FormLabel text="Warehouse" required />}
+            rules={getValidationRules(orderCreateSchema, "warehouseId")}
+            validateTrigger="onChange"
           >
             <Select
               placeholder="Choose a warehouse"
@@ -202,6 +206,8 @@ export default function OrdersPage() {
           <Form.Item
             name="status"
             label={<FormLabel text="Status" required />}
+            rules={getValidationRules(orderCreateSchema, "status")}
+            validateTrigger="onChange"
             initialValue="NEW"
           >
             <Select

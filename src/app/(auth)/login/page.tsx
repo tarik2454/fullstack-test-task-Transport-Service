@@ -4,15 +4,20 @@ import { useRouter } from "next/navigation";
 import { Form, Input, Button, message } from "antd";
 import Link from "next/link";
 import { FormLabel } from "@/components/FormLabel";
-import { loginSchema } from "@/schemas/authSchemas";
+import { LoginData, LoginResponse, loginSchema } from "@/schemas/authSchemas";
 import { handleFormErrors, getValidationRules } from "@/utils/formValidation";
+
+type ApiResult<T> = {
+  data?: T;
+  error?: unknown;
+};
 
 export default function LoginPage() {
   const [form] = Form.useForm();
   const router = useRouter();
 
   const handleSubmit = async () => {
-    const values = form.getFieldsValue();
+    const values = form.getFieldsValue() as LoginData;
 
     const res = await fetch("/api/auth/login", {
       method: "POST",
@@ -20,16 +25,17 @@ export default function LoginPage() {
       body: JSON.stringify(values),
     });
 
-    const { data, error } = await res.json();
+    const { data, error }: ApiResult<LoginResponse> = await res.json();
 
-    if (!res.ok) {
+    if (!res.ok || !data) {
       handleFormErrors(error, form);
       return;
     }
 
-    const { role } = await res.json();
     message.success(`Welcome, ${data.user.email}!`);
-    router.push(role === "MANAGER" ? "/manager/orders" : "/driver/orders");
+    router.push(
+      data.user.role === "MANAGER" ? "/manager/orders" : "/driver/orders"
+    );
   };
 
   return (

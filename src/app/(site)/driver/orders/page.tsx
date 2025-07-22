@@ -4,13 +4,7 @@ import { useEffect, useState } from "react";
 import { Table, message, Select } from "antd";
 import { getDriverOrders, updateStatus } from "@/utils/apiClient/driver";
 import { handleFormErrors } from "@/utils/formValidation";
-
-interface Order {
-  id: string;
-  warehouse: { name: string };
-  client: { name: string };
-  status: string;
-}
+import { OrderData } from "@/schemas/commonOrderSchemas";
 
 const statusOptions = [
   { label: "NEW", value: "NEW" },
@@ -20,7 +14,7 @@ const statusOptions = [
 ];
 
 export default function DriverOrdersPage() {
-  const [orders, setOrders] = useState<Order[]>([]);
+  const [orders, setOrders] = useState<OrderData[]>([]);
   const [loading, setLoading] = useState(false);
 
   const fetchOrders = async () => {
@@ -68,7 +62,7 @@ export default function DriverOrdersPage() {
             title: "#",
             dataIndex: "index",
             key: "index",
-            render: (_: unknown, __: Order, index: number) => index + 1,
+            render: (_: unknown, __: OrderData, index: number) => index + 1,
             width: 50,
           },
           { title: "Client", dataIndex: ["client", "name"] },
@@ -76,7 +70,7 @@ export default function DriverOrdersPage() {
           {
             title: "Status",
             dataIndex: "status",
-            render: (status: string, record: Order) => (
+            render: (status: string, record: OrderData) => (
               <Select
                 value={status}
                 onChange={(value) => handleUpdateStatus(record.id, value)}

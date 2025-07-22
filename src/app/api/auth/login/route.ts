@@ -1,8 +1,7 @@
 import { db } from "@/utils/prisma";
 import { compare } from "bcryptjs";
 import { SignJWT } from "jose";
-import { NextResponse } from "next/server";
-import { errorResponse } from "@/utils/server/apiResponse";
+import { errorResponse, successResponse } from "@/utils/server/apiResponse";
 import { formatZodErrors } from "@/utils/server/formatServerErrors";
 import { loginSchema } from "@/schemas/authSchemas";
 
@@ -19,13 +18,7 @@ export async function POST(req: Request) {
 
     const user = await db.user.findUnique({ where: { email: body.email } });
 
-    if (!user) {
-      return errorResponse("Incorrect email or password", 401);
-    }
-
-    const isPasswordCorrect = await compare(body.password, user.password);
-
-    if (!isPasswordCorrect) {
+    if (!user || !(await compare(body.password, user.password))) {
       return errorResponse("Incorrect email or password", 401);
     }
 
@@ -41,7 +34,9 @@ export async function POST(req: Request) {
       .setExpirationTime("7d")
       .sign(secret);
 
-    const res = NextResponse.json({ role: user.role });
+    const res = successResponse({
+      user: { role: user.role, email: user.email },
+    });
 
     res.cookies.set("token", token, {
       httpOnly: true,

@@ -1,10 +1,7 @@
-import { Warehouse } from "@/schemas/warehouseSchemas";
+import { WarehouseData } from "@/schemas/warehouseSchemas";
+import { ApiResult } from "./types";
 
-type ApiResult<T> =
-  | { success: true; data: T }
-  | { success: false; error: unknown };
-
-export async function getWarehouses(): Promise<ApiResult<Warehouse[]>> {
+export async function getWarehouses(): Promise<ApiResult<WarehouseData[]>> {
   const res = await fetch("/api/warehouses");
   const { error, data } = await res.json();
 
@@ -16,9 +13,9 @@ export async function getWarehouses(): Promise<ApiResult<Warehouse[]>> {
 }
 
 export async function saveWarehouse(
-  values: Warehouse,
-  editing?: Warehouse
-): Promise<ApiResult<Warehouse>> {
+  values: WarehouseData,
+  editing?: WarehouseData
+): Promise<ApiResult<WarehouseData>> {
   const method = editing ? "PUT" : "POST";
   const url = editing ? `/api/warehouses/${editing.id}` : "/api/warehouses";
 

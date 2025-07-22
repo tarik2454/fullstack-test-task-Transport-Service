@@ -7,15 +7,18 @@ import {
   getWarehouses,
   saveWarehouse,
 } from "@/utils/apiClient/warehouse";
-import { Warehouse } from "@/schemas/warehouseSchemas";
+import {
+  WarehouseData,
+  warehouseCreateSchema,
+} from "@/schemas/warehouseSchemas";
 import { FormLabel } from "@/components/FormLabel";
-import { handleFormErrors } from "@/utils/formValidation";
+import { getValidationRules, handleFormErrors } from "@/utils/formValidation";
 
 export default function WarehousesPage() {
-  const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
+  const [warehouses, setWarehouses] = useState<WarehouseData[]>([]);
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editing, setEditing] = useState<Warehouse | undefined>(undefined);
+  const [editing, setEditing] = useState<WarehouseData | undefined>(undefined);
   const [form] = Form.useForm();
 
   const fetchWarehouses = async () => {
@@ -37,7 +40,7 @@ export default function WarehousesPage() {
   }, []);
 
   const handleSave = async () => {
-    const values = await form.validateFields();
+    const values = form.getFieldsValue() as WarehouseData;
 
     const payload = editing ? { ...values, id: editing.id } : values;
 
@@ -84,7 +87,7 @@ export default function WarehousesPage() {
             title: "#",
             dataIndex: "index",
             key: "index",
-            render: (_: unknown, __: Warehouse, index: number) => index + 1,
+            render: (_: unknown, __: WarehouseData, index: number) => index + 1,
             width: 50,
           },
           { title: "Name", dataIndex: "name" },
@@ -127,13 +130,18 @@ export default function WarehousesPage() {
         }}
       >
         <Form layout="vertical" form={form}>
-          <Form.Item name="name" label={<FormLabel text="Name" required />}>
+          <Form.Item
+            name="name"
+            label={<FormLabel text="Name" required />}
+            rules={getValidationRules(warehouseCreateSchema, "name")}
+          >
             <Input />
           </Form.Item>
 
           <Form.Item
             name="address"
             label={<FormLabel text="Address" required />}
+            rules={getValidationRules(warehouseCreateSchema, "address")}
           >
             <Input />
           </Form.Item>

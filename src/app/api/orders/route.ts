@@ -8,9 +8,8 @@ import { formatZodErrors } from "@/utils/server/formatServerErrors";
 export async function GET() {
   try {
     const user = await withAuth("MANAGER");
-    if (!user) {
-      return errorResponse("Unauthorized", 401);
-    }
+    if (!user) return errorResponse("Unauthorized", 401);
+
     const managerId = (user as { id: string }).id;
 
     const orders = await db.order.findMany({

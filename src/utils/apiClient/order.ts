@@ -1,8 +1,5 @@
 import { Order, OrderCreate } from "@/schemas/commonOrderSchemas";
-
-type ApiResult<T> =
-  | { success: true; data: T }
-  | { success: false; error: unknown };
+import { ApiResult } from "./types";
 
 export async function getOrders(): Promise<ApiResult<Order[]>> {
   const res = await fetch("/api/orders");

@@ -8,8 +8,26 @@ export const registerSchema = z.object({
   password: z.string().min(6),
   role: z.nativeEnum(Role),
 });
+export type RegisterData = z.infer<typeof registerSchema>;
 
 export const loginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(6),
 });
+export type LoginData = z.infer<typeof loginSchema>;
+
+export const registerResponseSchema = z.object({
+  user: z.object({
+    id: z.string(),
+    email: z.string().email(),
+  }),
+});
+export type RegisterResponse = z.infer<typeof registerResponseSchema>;
+
+export const loginResponseSchema = z.object({
+  user: z.object({
+    email: z.string().email(),
+    role: z.nativeEnum(Role),
+  }),
+});
+export type LoginResponse = z.infer<typeof loginResponseSchema>;

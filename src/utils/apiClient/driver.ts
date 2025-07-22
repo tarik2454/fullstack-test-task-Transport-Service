@@ -1,8 +1,5 @@
 import { Order, OrderStatusUpdate } from "@/schemas/commonOrderSchemas";
-
-type ApiResult<T> =
-  | { success: true; data: T }
-  | { success: false; error: unknown };
+import { ApiResult } from "./types";
 
 export async function getDriverOrders(): Promise<ApiResult<Order[]>> {
   const res = await fetch("/api/driver/orders");

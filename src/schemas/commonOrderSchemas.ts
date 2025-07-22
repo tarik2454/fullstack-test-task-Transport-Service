@@ -22,17 +22,16 @@ export const orderSchema = z.object({
   manager: managerSchema,
   driver: driverSchema.optional(),
 });
+export type OrderData = z.infer<typeof orderSchema>;
 
 export const orderCreateSchema = z.object({
   clientId: z.string(),
   warehouseId: z.string(),
   status: z.nativeEnum(OrderStatus),
 });
+export type OrderCreate = z.infer<typeof orderCreateSchema>;
 
 export const orderStatusUpdateSchema = z.object({
   status: z.nativeEnum(OrderStatus),
 });
-
-export type Order = z.infer<typeof orderSchema>;
-export type OrderCreate = z.infer<typeof orderCreateSchema>;
 export type OrderStatusUpdate = z.infer<typeof orderStatusUpdateSchema>;

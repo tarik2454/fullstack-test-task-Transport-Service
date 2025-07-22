@@ -4,10 +4,15 @@ import { Form, Input, Button, Select, message } from "antd";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { FormLabel } from "@/components/FormLabel";
-import { registerSchema } from "@/schemas/authSchemas";
+import { RegisterResponse, registerSchema } from "@/schemas/authSchemas";
 import { getValidationRules, handleFormErrors } from "@/utils/formValidation";
 
 const { Option } = Select;
+
+type ApiResult<T> = {
+  data?: T;
+  error?: unknown;
+};
 
 export default function RegisterPage() {
   const [form] = Form.useForm();
@@ -22,9 +27,9 @@ export default function RegisterPage() {
       body: JSON.stringify(values),
     });
 
-    const { data, error } = await res.json();
+    const { data, error }: ApiResult<RegisterResponse> = await res.json();
 
-    if (!res.ok) {
+    if (!res.ok || !data) {
       handleFormErrors(error, form);
       return;
     }

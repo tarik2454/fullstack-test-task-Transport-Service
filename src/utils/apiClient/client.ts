@@ -1,10 +1,7 @@
-import { Client } from "@/schemas/clientSchemas";
+import { ClientData } from "@/schemas/clientSchemas";
+import { ApiResult } from "./types";
 
-type ApiResult<T> =
-  | { success: true; data: T }
-  | { success: false; error: unknown };
-
-export async function getClients(): Promise<ApiResult<Client[]>> {
+export async function getClients(): Promise<ApiResult<ClientData[]>> {
   const res = await fetch("/api/clients");
   const { error, data } = await res.json();
 
@@ -16,9 +13,9 @@ export async function getClients(): Promise<ApiResult<Client[]>> {
 }
 
 export async function saveClient(
-  values: Client,
-  editing?: Client
-): Promise<ApiResult<Client>> {
+  values: ClientData,
+  editing?: ClientData
+): Promise<ApiResult<ClientData>> {
   const method = editing ? "PUT" : "POST";
   const url = editing ? `/api/clients/${editing.id}` : "/api/clients";
 
