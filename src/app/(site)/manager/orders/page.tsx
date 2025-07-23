@@ -71,7 +71,7 @@ export default function OrdersPage() {
       status: values.status,
     };
 
-    const res = await saveOrder(payload, editing ?? undefined);
+    const res = await saveOrder(payload, editing);
 
     if (!res.success) {
       handleFormErrors(res.error, form);

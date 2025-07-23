@@ -14,6 +14,9 @@ export async function PATCH(
     const { id } = await params;
     const body = await req.json();
 
+    const user = await withAuth("DRIVER");
+    if (!user) return errorResponse("Unauthorized", 401);
+
     const parseResult = orderStatusUpdateSchema.safeParse(body);
     if (!parseResult.success) {
       return errorResponse(formatZodErrors(parseResult.error), 400);
@@ -24,12 +27,7 @@ export async function PATCH(
     const currentOrder = await db.order.findUnique({
       where: { id: id },
     });
-    if (!currentOrder) {
-      return errorResponse("Order not found", 404);
-    }
-
-    const user = await withAuth("DRIVER");
-    if (!user) return errorResponse("Unauthorized", 401);
+    if (!currentOrder) return errorResponse("Order not found", 404);
 
     const driverIdFromToken = user.id;
 
@@ -39,7 +37,7 @@ export async function PATCH(
     } = {
       status: status as OrderStatus,
       ...(currentOrder.status === "NEW" && status !== "NEW"
-        ? { driverId: driverIdFromToken as string }
+        ? { driverId: driverIdFromToken }
         : {}),
     };
 

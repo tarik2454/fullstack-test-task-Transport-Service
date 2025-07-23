@@ -10,8 +10,10 @@ export async function GET() {
     const user = await withAuth("MANAGER");
     if (!user) return errorResponse("Unauthorized", 401);
 
+    const managerId = user.id;
+
     const warehouses = await db.warehouse.findMany({
-      where: { managerId: user.id },
+      where: { managerId },
     });
 
     return successResponse(warehouses);

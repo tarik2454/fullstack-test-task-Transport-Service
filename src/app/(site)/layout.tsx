@@ -1,18 +1,19 @@
 "use client";
 
+import { CurrentResponse } from "@/schemas/authSchemas";
 import { handleFormErrors } from "@/utils/formValidation";
+import { message } from "antd";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ReactNode, useEffect, useState } from "react";
 
-type UserPayload = {
-  id: string;
-  role: "MANAGER" | "DRIVER";
-  email: string;
+type ApiResult<T> = {
+  data?: T;
+  error?: unknown;
 };
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<UserPayload | null>(null);
+  const [user, setUser] = useState<CurrentResponse | null>(null);
 
   const router = useRouter();
 
@@ -20,28 +21,37 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     const getUser = async () => {
       const res = await fetch("/api/auth/current");
 
-      const data = await res.json();
+      const { data, error }: ApiResult<CurrentResponse> = await res.json();
 
-      if (!res.ok) {
-        handleFormErrors(data.error);
+      if (!res.ok || !data) {
+        handleFormErrors(error);
         return;
       }
 
-      setUser(data.user);
+      setUser(data);
     };
 
     getUser();
   }, [router]);
 
   const handleLogout = async () => {
-    await fetch("/api/auth/logout", { method: "POST" });
+    const res = await fetch("/api/auth/logout", { method: "POST" });
+
+    const { data, error } = await res.json();
+
+    if (!res.ok) {
+      handleFormErrors(error);
+      return;
+    }
+
+    message.success(data.message);
     router.push("/");
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
       <nav className="bg-white shadow px-6 py-4 flex justify-between">
-        {user?.role === "MANAGER" && (
+        {user?.user.role === "MANAGER" && (
           <div className="flex gap-4">
             <Link
               href="/manager/orders"
@@ -64,7 +74,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           </div>
         )}
 
-        {user?.role === "DRIVER" && (
+        {user?.user.role === "DRIVER" && (
           <div className="flex gap-4">
             <Link
               href="/driver/orders"
@@ -76,7 +86,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         )}
 
         <div className="flex items-center gap-4">
-          <p>{user?.email}</p>
+          <p>{user?.user.email}</p>
           <button
             onClick={handleLogout}
             className="text-blue-500 hover:underline cursor-pointer"

@@ -4,9 +4,9 @@ import { AntdRegistry } from "@ant-design/nextjs-registry";
 import "@ant-design/v5-patch-for-react-19";
 import "../globals.css";
 
-const geistSans = Inter({ variable: "--font-geist-sans", subsets: ["latin"] });
-const geistMono = Roboto_Mono({
-  variable: "--font-geist-mono",
+const interFont = Inter({ variable: "--font-inter", subsets: ["latin"] });
+const robotoMonoFont = Roboto_Mono({
+  variable: "--font-roboto-mono",
   subsets: ["latin"],
 });
 
@@ -23,7 +23,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${interFont.variable} ${robotoMonoFont.variable} antialiased`}
       >
         <AntdRegistry>{children}</AntdRegistry>
       </body>

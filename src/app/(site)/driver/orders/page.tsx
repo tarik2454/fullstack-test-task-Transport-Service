@@ -54,7 +54,7 @@ export default function DriverOrdersPage() {
       </h2>
       <Table
         rowKey="id"
-        dataSource={Array.isArray(orders) ? orders : []}
+        dataSource={orders}
         loading={loading}
         bordered
         columns={[
