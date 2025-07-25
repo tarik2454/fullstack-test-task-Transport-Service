@@ -6,11 +6,7 @@ import Link from "next/link";
 import { FormLabel } from "@/components/FormLabel";
 import { LoginData, LoginResponse, loginSchema } from "@/schemas/authSchemas";
 import { handleFormErrors, getValidationRules } from "@/utils/formValidation";
-
-type ApiResult<T> = {
-  data?: T;
-  error?: unknown;
-};
+import { ApiResultServer } from "@/utils/apiClient/types";
 
 export default function LoginPage() {
   const [form] = Form.useForm();
@@ -25,7 +21,7 @@ export default function LoginPage() {
       body: JSON.stringify(values),
     });
 
-    const { data, error }: ApiResult<LoginResponse> = await res.json();
+    const { data, error }: ApiResultServer<LoginResponse> = await res.json();
 
     if (!res.ok || !data) {
       handleFormErrors(error, form);

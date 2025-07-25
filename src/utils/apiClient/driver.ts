@@ -1,16 +1,5 @@
-import { OrderData, OrderStatusUpdate } from "@/schemas/commonOrderSchemas";
+import { OrderStatusUpdate } from "@/schemas/commonOrderSchemas";
 import { ApiResult } from "./types";
-
-export async function getDriverOrders(): Promise<ApiResult<OrderData[]>> {
-  const res = await fetch("/api/driver/orders");
-
-  const { error, data } = await res.json();
-
-  if (!res.ok) {
-    return { success: false, error: error };
-  }
-  return { success: true, data: data };
-}
 
 export async function updateStatus({
   id,

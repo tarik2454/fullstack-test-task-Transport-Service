@@ -1,7 +1,7 @@
-import { Order, OrderCreate } from "@/schemas/commonOrderSchemas";
+import { OrderData, OrderCreate } from "@/schemas/commonOrderSchemas";
 import { ApiResult } from "./types";
 
-export async function getOrders(): Promise<ApiResult<Order[]>> {
+export async function getOrders(): Promise<ApiResult<OrderData[]>> {
   const res = await fetch("/api/orders");
   const { error, data } = await res.json();
 
@@ -14,8 +14,8 @@ export async function getOrders(): Promise<ApiResult<Order[]>> {
 
 export async function saveOrder(
   values: OrderCreate,
-  editing?: Order
-): Promise<ApiResult<Order>> {
+  editing?: OrderData
+): Promise<ApiResult<OrderData>> {
   const method = editing ? "PUT" : "POST";
   const url = editing ? `/api/orders/${editing.id}` : "/api/orders";
 

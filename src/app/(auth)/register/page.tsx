@@ -4,22 +4,22 @@ import { Form, Input, Button, Select, message } from "antd";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { FormLabel } from "@/components/FormLabel";
-import { RegisterResponse, registerSchema } from "@/schemas/authSchemas";
+import {
+  RegisterData,
+  RegisterResponse,
+  registerSchema,
+} from "@/schemas/authSchemas";
 import { getValidationRules, handleFormErrors } from "@/utils/formValidation";
+import { ApiResultServer } from "@/utils/apiClient/types";
 
 const { Option } = Select;
-
-type ApiResult<T> = {
-  data?: T;
-  error?: unknown;
-};
 
 export default function RegisterPage() {
   const [form] = Form.useForm();
   const router = useRouter();
 
   const handleSubmit = async () => {
-    const values = form.getFieldsValue();
+    const values = form.getFieldsValue() as RegisterData;
 
     const res = await fetch("/api/auth/register", {
       method: "POST",
@@ -27,7 +27,7 @@ export default function RegisterPage() {
       body: JSON.stringify(values),
     });
 
-    const { data, error }: ApiResult<RegisterResponse> = await res.json();
+    const { data, error }: ApiResultServer<RegisterResponse> = await res.json();
 
     if (!res.ok || !data) {
       handleFormErrors(error, form);
