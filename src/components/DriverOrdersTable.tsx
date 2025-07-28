@@ -19,8 +19,11 @@ export function DriverOrdersTable({
   initialOrders: OrderData[];
 }) {
   const [orders, setOrders] = useState<OrderData[]>(initialOrders);
+  const [loading, setLoading] = useState(false);
 
   const handleUpdateStatus = async (id: string, status: string) => {
+    setLoading(true);
+
     const res = await updateStatus({ id, status });
 
     if (!res.success) {
@@ -37,12 +40,15 @@ export function DriverOrdersTable({
           : order
       )
     );
+
+    setLoading(false);
   };
 
   return (
     <Table
       rowKey="id"
       dataSource={orders}
+      loading={loading}
       bordered
       columns={[
         {

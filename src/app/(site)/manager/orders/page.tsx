@@ -18,7 +18,7 @@ export default function OrdersPage() {
   const [warehouses, setWarehouses] = useState<WarehouseData[]>([]);
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editing, setEditing] = useState<OrderData | null>(null);
+  const [editing, setEditing] = useState<OrderData | undefined>(undefined);
   const [form] = Form.useForm();
 
   const fetchAll = async () => {
@@ -82,7 +82,7 @@ export default function OrdersPage() {
     fetchAll();
     setIsModalOpen(false);
     form.resetFields();
-    setEditing(null);
+    setEditing(undefined);
   };
 
   const handleDelete = async (id: string) => {
@@ -177,7 +177,7 @@ export default function OrdersPage() {
         onCancel={() => {
           setIsModalOpen(false);
           form.resetFields();
-          setEditing(null);
+          setEditing(undefined);
         }}
       >
         <Form layout="vertical" form={form}>

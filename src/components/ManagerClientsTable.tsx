@@ -1,74 +1,146 @@
 "use client";
 
+import { FormLabel } from "@/components/FormLabel";
+import { clientCreateSchema, ClientData } from "@/schemas/clientSchemas";
+import { deleteClient, saveClient } from "@/utils/apiClient/client";
+import { getValidationRules, handleFormErrors } from "@/utils/formValidation";
+import { Button, Form, Input, message, Modal, Table } from "antd";
 import { useState } from "react";
-import { Table, message, Select } from "antd";
-import { OrderData } from "@/schemas/commonOrderSchemas";
-import { updateStatus } from "@/utils/apiClient/driver";
-import { handleFormErrors } from "@/utils/formValidation";
 
-const statusOptions = [
-  { label: "NEW", value: "NEW" },
-  { label: "ASSIGNED", value: "ASSIGNED" },
-  { label: "IN_PROGRESS", value: "IN_PROGRESS" },
-  { label: "COMPLETED", value: "COMPLETED" },
-];
-
-export function DriverOrdersTable({
-  initialOrders,
+export function ManagerClientsTable({
+  initialClients,
 }: {
-  initialOrders: OrderData[];
+  initialClients: ClientData[];
 }) {
-  const [orders, setOrders] = useState<OrderData[]>(initialOrders);
+  const [clients, setClients] = useState<ClientData[]>(initialClients);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [editing, setEditing] = useState<ClientData | undefined>(undefined);
+  const [form] = Form.useForm();
 
-  const handleUpdateStatus = async (id: string, status: string) => {
-    const res = await updateStatus({ id, status });
+  const handleSave = async () => {
+    setLoading(true);
+
+    const values = form.getFieldsValue() as ClientData;
+    const payload = editing ? { ...values, id: editing.id } : values;
+
+    const res = await saveClient(payload, editing);
+
+    if (!res.success) {
+      handleFormErrors(res.error, form);
+      return;
+    }
+
+    message.success("Saved");
+
+    if (editing) {
+      setClients((prev) =>
+        prev.map((c) => (c.id === res.data.id ? res.data : c))
+      );
+    } else {
+      setClients((prev) => [...prev, res.data]);
+    }
+
+    setIsModalOpen(false);
+    form.resetFields();
+    setEditing(undefined);
+    setLoading(false);
+  };
+
+  const handleDelete = async (id: string) => {
+    const res = await deleteClient(id);
 
     if (!res.success) {
       handleFormErrors(res.error);
       return;
     }
 
-    message.success("Updated");
+    message.success("Deleted");
 
-    setOrders((prev) =>
-      prev.map((order) =>
-        order.id === id
-          ? { ...order, status: status as OrderData["status"] }
-          : order
-      )
-    );
+    setClients((prev) => prev.filter((c) => c.id !== id));
   };
 
   return (
-    <Table
-      rowKey="id"
-      dataSource={orders}
-      bordered
-      columns={[
-        {
-          title: "#",
-          dataIndex: "index",
-          key: "index",
-          render: (_: unknown, __: OrderData, index: number) => index + 1,
-          width: 50,
-        },
-        { title: "Client", dataIndex: ["client", "name"] },
-        { title: "Warehouse", dataIndex: ["warehouse", "name"] },
-        {
-          title: "Status",
-          dataIndex: "status",
-          render: (status: string, record: OrderData) => (
-            <Select
-              value={status}
-              onChange={(value) => handleUpdateStatus(record.id, value)}
-              options={statusOptions}
-              disabled={status === "COMPLETED"}
-              size="small"
-              style={{ width: 160 }}
-            />
-          ),
-        },
-      ]}
-    />
+    <div>
+      <div className="flex justify-end mb-4">
+        <Button onClick={() => setIsModalOpen(true)}>Add client</Button>
+      </div>
+
+      <Table
+        dataSource={clients}
+        loading={loading}
+        rowKey="id"
+        bordered
+        columns={[
+          {
+            title: "#",
+            render: (_: unknown, __: ClientData, index: number) => index + 1,
+            width: 50,
+          },
+          { title: "Name", dataIndex: "name" },
+          { title: "Address", dataIndex: "address" },
+          { title: "Phone", dataIndex: "phone" },
+          {
+            title: "Actions",
+            render: (_, record) => (
+              <div className="flex gap-2">
+                <Button
+                  size="small"
+                  onClick={() => {
+                    form.setFieldsValue(record);
+                    setEditing(record);
+                    setIsModalOpen(true);
+                  }}
+                >
+                  Change
+                </Button>
+                <Button
+                  size="small"
+                  danger
+                  onClick={() => handleDelete(record.id)}
+                >
+                  Delete
+                </Button>
+              </div>
+            ),
+          },
+        ]}
+      />
+
+      <Modal
+        title={editing ? "Change client" : "Add client"}
+        open={isModalOpen}
+        onOk={handleSave}
+        onCancel={() => {
+          setIsModalOpen(false);
+          form.resetFields();
+          setEditing(undefined);
+        }}
+      >
+        <Form layout="vertical" form={form}>
+          <Form.Item
+            name="name"
+            label={<FormLabel text="Name" required />}
+            rules={getValidationRules(clientCreateSchema, "name")}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name="address"
+            label={<FormLabel text="Address" required />}
+            rules={getValidationRules(clientCreateSchema, "address")}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name="phone"
+            label={<FormLabel text="Phone" required />}
+            rules={getValidationRules(clientCreateSchema, "phone")}
+          >
+            <Input />
+          </Form.Item>
+        </Form>
+      </Modal>
+    </div>
   );
 }
