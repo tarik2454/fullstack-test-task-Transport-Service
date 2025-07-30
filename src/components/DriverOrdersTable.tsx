@@ -5,6 +5,8 @@ import { Table, message, Select } from "antd";
 import { OrderData } from "@/schemas/commonOrderSchemas";
 import { updateStatus } from "@/utils/apiClient/driver";
 import { handleFormErrors } from "@/utils/formValidation";
+import { upsertToTop } from "@/utils/upsertToTop";
+import { OrderStatus } from "@prisma/client";
 
 const statusOptions = [
   { label: "NEW", value: "NEW" },
@@ -21,7 +23,7 @@ export function DriverOrdersTable({
   const [orders, setOrders] = useState<OrderData[]>(initialOrders);
   const [loading, setLoading] = useState(false);
 
-  const handleUpdateStatus = async (id: string, status: string) => {
+  const handleUpdateStatus = async (id: string, status: OrderStatus) => {
     setLoading(true);
 
     const res = await updateStatus({ id, status });
@@ -34,11 +36,7 @@ export function DriverOrdersTable({
     message.success("Updated");
 
     setOrders((prev) =>
-      prev.map((order) =>
-        order.id === id
-          ? { ...order, status: status as OrderData["status"] }
-          : order
-      )
+      upsertToTop(prev, res.data, (order) => order.id === res.data.id)
     );
 
     setLoading(false);
@@ -65,7 +63,7 @@ export function DriverOrdersTable({
           dataIndex: "status",
           render: (status: string, record: OrderData) => (
             <Select
-              value={status}
+              value={status as OrderStatus}
               onChange={(value) => handleUpdateStatus(record.id, value)}
               options={statusOptions}
               disabled={status === "COMPLETED"}

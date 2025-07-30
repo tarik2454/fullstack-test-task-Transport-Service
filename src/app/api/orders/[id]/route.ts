@@ -20,7 +20,26 @@ export async function PUT(
     const order = await db.order.update({
       where: { id },
       data: parseResult.data,
-      include: { warehouse: true, client: true },
+      include: {
+        client: {
+          select: { name: true },
+        },
+        warehouse: {
+          select: { name: true },
+        },
+        manager: {
+          select: {
+            firstName: true,
+            lastName: true,
+          },
+        },
+        driver: {
+          select: {
+            firstName: true,
+            lastName: true,
+          },
+        },
+      },
     });
 
     return successResponse(order);

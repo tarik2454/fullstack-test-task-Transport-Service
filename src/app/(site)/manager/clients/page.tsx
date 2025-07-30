@@ -16,7 +16,7 @@ export default async function ClientsPage() {
     cache: "no-store",
   });
 
-  const { error, data }: ApiResultServer<ClientData[]> = await res.json();
+  const { data, error }: ApiResultServer<ClientData[]> = await res.json();
 
   if (!res.ok || !data) {
     handleFormErrors(error);
@@ -26,6 +26,7 @@ export default async function ClientsPage() {
   return (
     <div>
       <h2 className="text-xl font-semibold mb-4">Clients</h2>
+
       <ManagerClientsTable initialClients={data} />
     </div>
   );

@@ -33,13 +33,9 @@ export function ManagerClientsTable({
 
     message.success("Saved");
 
-    if (editing) {
-      setClients((prev) =>
-        prev.map((c) => (c.id === res.data.id ? res.data : c))
-      );
-    } else {
-      setClients((prev) => [...prev, res.data]);
-    }
+    setClients((prev) =>
+      prev.map((c) => (c.id === res.data.id ? res.data : c))
+    );
 
     setIsModalOpen(false);
     form.resetFields();

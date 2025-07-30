@@ -1,4 +1,4 @@
-import { OrderStatusUpdate } from "@/schemas/commonOrderSchemas";
+import { OrderData, OrderStatusUpdate } from "@/schemas/commonOrderSchemas";
 import { ApiResult } from "./types";
 
 export async function updateStatus({
@@ -6,8 +6,8 @@ export async function updateStatus({
   status,
 }: {
   id: string;
-  status: string;
-}): Promise<ApiResult<OrderStatusUpdate>> {
+  status: OrderStatusUpdate["status"];
+}): Promise<ApiResult<OrderData>> {
   const res = await fetch(`/api/orders/${id}/status`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },

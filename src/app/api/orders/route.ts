@@ -5,6 +5,23 @@ import { errorResponse, successResponse } from "@/utils/server/apiResponse";
 import { orderCreateSchema } from "@/schemas/commonOrderSchemas";
 import { formatZodErrors } from "@/utils/server/formatServerErrors";
 
+const orderInclude = {
+  client: true,
+  warehouse: true,
+  manager: {
+    select: {
+      firstName: true,
+      lastName: true,
+    },
+  },
+  driver: {
+    select: {
+      firstName: true,
+      lastName: true,
+    },
+  },
+};
+
 export async function GET() {
   try {
     const user = await withAuth("MANAGER");
@@ -14,22 +31,7 @@ export async function GET() {
 
     const orders = await db.order.findMany({
       where: { managerId },
-      include: {
-        client: true,
-        warehouse: true,
-        manager: {
-          select: {
-            firstName: true,
-            lastName: true,
-          },
-        },
-        driver: {
-          select: {
-            firstName: true,
-            lastName: true,
-          },
-        },
-      },
+      include: orderInclude,
     });
 
     return successResponse(orders);
@@ -41,11 +43,9 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   try {
     const user = await withAuth("MANAGER");
-    if (!user) {
-      return errorResponse("Unauthorized", 401);
-    }
+    if (!user) return errorResponse("Unauthorized", 401);
 
-    const { id: managerId } = user as { id: string };
+    const { id: managerId } = user;
 
     const body = await req.json();
 
@@ -56,9 +56,10 @@ export async function POST(req: NextRequest) {
 
     const order = await db.order.create({
       data: {
-        ...body,
+        ...parseResult.data,
         managerId,
       },
+      include: orderInclude,
     });
 
     return successResponse(order);
