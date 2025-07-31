@@ -16,6 +16,13 @@ import { getClients } from "@/utils/apiClient/client";
 import { getWarehouses } from "@/utils/apiClient/warehouse";
 import { upsertToTop } from "@/utils/upsertToTop";
 
+const statusOptions = [
+  { label: "NEW", value: "NEW" },
+  { label: "ASSIGNED", value: "ASSIGNED" },
+  { label: "IN_PROGRESS", value: "IN_PROGRESS" },
+  { label: "COMPLETED", value: "COMPLETED" },
+];
+
 export function ManagerOrdersTable({
   initialOrders,
 }: {
@@ -213,14 +220,7 @@ export function ManagerOrdersTable({
             validateTrigger="onChange"
             initialValue="NEW"
           >
-            <Select
-              placeholder="Choose a status"
-              options={[
-                { label: "NEW", value: "NEW" },
-                { label: "IN_PROGRESS", value: "IN_PROGRESS" },
-                { label: "COMPLETED", value: "COMPLETED" },
-              ]}
-            />
+            <Select placeholder="Choose a status" options={statusOptions} />
           </Form.Item>
         </Form>
       </Modal>
