@@ -25,7 +25,9 @@ export default function RootLayout({
       <body
         className={`${interFont.variable} ${robotoMonoFont.variable} antialiased`}
       >
-        <AntdRegistry>{children}</AntdRegistry>
+        <main>
+          <AntdRegistry>{children}</AntdRegistry>
+        </main>
       </body>
     </html>
   );

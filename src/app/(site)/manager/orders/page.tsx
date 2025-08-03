@@ -25,10 +25,6 @@ export default async function OrdersPage() {
 
   return (
     <div>
-      <div className="flex justify-between mb-4">
-        <h2 className="text-xl font-semibold">Orders</h2>
-      </div>
-
       <ManagerOrdersTable initialOrders={data} />
     </div>
   );

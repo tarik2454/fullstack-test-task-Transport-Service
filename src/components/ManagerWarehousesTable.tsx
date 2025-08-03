@@ -1,31 +1,35 @@
 "use client";
 
+import { useState } from "react";
+import { Table, Button, Modal, Form, Input, message } from "antd";
+import { deleteWarehouse, saveWarehouse } from "@/utils/apiClient/warehouse";
+import {
+  WarehouseData,
+  warehouseCreateSchema,
+} from "@/schemas/warehouseSchemas";
 import { FormLabel } from "@/components/FormLabel";
-import { clientCreateSchema, ClientData } from "@/schemas/clientSchemas";
-import { deleteClient, saveClient } from "@/utils/apiClient/client";
 import { getValidationRules, handleFormErrors } from "@/utils/formValidation";
 import { upsertToTop } from "@/utils/upsertToTop";
-import { Button, Form, Input, message, Modal, Table } from "antd";
-import { useState } from "react";
 
-export function ManagerClientsTable({
-  initialClients,
+export function ManagerWarehousesTable({
+  initialWarehouses,
 }: {
-  initialClients: ClientData[];
+  initialWarehouses: WarehouseData[];
 }) {
-  const [clients, setClients] = useState<ClientData[]>(initialClients);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [warehouses, setWarehouses] =
+    useState<WarehouseData[]>(initialWarehouses);
   const [loading, setLoading] = useState(false);
-  const [editing, setEditing] = useState<ClientData | undefined>(undefined);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editing, setEditing] = useState<WarehouseData | undefined>(undefined);
   const [form] = Form.useForm();
 
   const handleSave = async () => {
     setLoading(true);
 
-    const values = form.getFieldsValue() as ClientData;
+    const values = form.getFieldsValue() as WarehouseData;
     const payload = editing ? { ...values, id: editing.id } : values;
 
-    const res = await saveClient(payload, editing);
+    const res = await saveWarehouse(payload, editing);
 
     if (!res.success) {
       handleFormErrors(res.error, form);
@@ -34,8 +38,8 @@ export function ManagerClientsTable({
 
     message.success("Saved");
 
-    setClients((prev) =>
-      upsertToTop(prev, res.data, (c) => c.id === res.data.id)
+    setWarehouses((prev) =>
+      upsertToTop(prev, res.data, (w) => w.id === res.data.id)
     );
 
     setIsModalOpen(false);
@@ -45,7 +49,7 @@ export function ManagerClientsTable({
   };
 
   const handleDelete = async (id: string) => {
-    const res = await deleteClient(id);
+    const res = await deleteWarehouse(id);
 
     if (!res.success) {
       handleFormErrors(res.error);
@@ -54,30 +58,31 @@ export function ManagerClientsTable({
 
     message.success("Deleted");
 
-    setClients((prev) => prev.filter((c) => c.id !== id));
+    setWarehouses((prev) => prev.filter((w) => w.id !== id));
   };
 
   return (
-    <div>
+    <>
       <div className="flex justify-between mb-4">
-        <h2 className="text-xl font-semibold ">Clients</h2>
-        <Button onClick={() => setIsModalOpen(true)}>Add client</Button>
+        <h2 className="text-xl font-semibold">Warehouses</h2>
+        <Button onClick={() => setIsModalOpen(true)}>Add warehouse</Button>
       </div>
 
       <Table
-        dataSource={clients}
-        loading={loading}
         rowKey="id"
+        dataSource={warehouses}
+        loading={loading}
         bordered
         columns={[
           {
             title: "#",
-            render: (_: unknown, __: ClientData, index: number) => index + 1,
+            dataIndex: "index",
+            key: "index",
+            render: (_: unknown, __: WarehouseData, index: number) => index + 1,
             width: 50,
           },
           { title: "Name", dataIndex: "name" },
           { title: "Address", dataIndex: "address" },
-          { title: "Phone", dataIndex: "phone" },
           {
             title: "Actions",
             render: (_, record) => (
@@ -106,7 +111,7 @@ export function ManagerClientsTable({
       />
 
       <Modal
-        title={editing ? "Change client" : "Add client"}
+        title={editing ? "Change warehouse" : "Add warehouse"}
         open={isModalOpen}
         onOk={handleSave}
         onCancel={() => {
@@ -119,26 +124,20 @@ export function ManagerClientsTable({
           <Form.Item
             name="name"
             label={<FormLabel text="Name" required />}
-            rules={getValidationRules(clientCreateSchema, "name")}
+            rules={getValidationRules(warehouseCreateSchema, "name")}
           >
             <Input />
           </Form.Item>
+
           <Form.Item
             name="address"
             label={<FormLabel text="Address" required />}
-            rules={getValidationRules(clientCreateSchema, "address")}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="phone"
-            label={<FormLabel text="Phone" required />}
-            rules={getValidationRules(clientCreateSchema, "phone")}
+            rules={getValidationRules(warehouseCreateSchema, "address")}
           >
             <Input />
           </Form.Item>
         </Form>
       </Modal>
-    </div>
+    </>
   );
 }

@@ -39,7 +39,7 @@ export default function LoginPage() {
   };
 
   const handleSubmit = async () => {
-    const values = form.getFieldsValue() as LoginData & { role: string };
+    const values = form.getFieldsValue() as LoginData;
 
     const res = await fetch("/api/auth/login", {
       method: "POST",
@@ -61,7 +61,9 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+      <h1 className="text-3xl font-bold mb-5">Delivery service</h1>
+
       <div className="mx-auto p-6 border rounded-xl shadow bg-gray-50">
         <h2 className="text-2xl font-semibold mb-6 text-center">Enter</h2>
 
@@ -101,9 +103,9 @@ export default function LoginPage() {
         </Form>
 
         <p className="mt-3 text-center text-sm text-gray-600">
-          Return to&nbsp;
-          <Link href="/" className="text-blue-600 hover:underline">
-            main page
+          Go to the&nbsp;
+          <Link href="/register" className="text-blue-600 hover:underline">
+            registration
           </Link>
         </p>
       </div>

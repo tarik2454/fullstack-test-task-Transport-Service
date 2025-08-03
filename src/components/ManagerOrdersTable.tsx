@@ -119,7 +119,8 @@ export function ManagerOrdersTable({
 
   return (
     <>
-      <div className="flex justify-end mb-4">
+      <div className="flex justify-between mb-4">
+        <h2 className="text-xl font-semibold">Orders</h2>
         <Button onClick={() => handleOpenModal()}>Create</Button>
       </div>
 
@@ -179,7 +180,6 @@ export function ManagerOrdersTable({
           },
         ]}
       />
-
       <Modal
         title={editing ? "Change order" : "Create order"}
         open={isModalOpen}

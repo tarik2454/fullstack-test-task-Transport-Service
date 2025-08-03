@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { db } from "@/utils/prisma";
 import { Prisma } from "@prisma/client";
-import { errorResponse } from "@/utils/server/apiResponse";
+import { errorResponse, successResponse } from "@/utils/server/apiResponse";
 import { clientSchema } from "@/schemas/clientSchemas";
 import { formatZodErrors } from "@/utils/server/formatServerErrors";
 
@@ -11,18 +11,19 @@ export async function PUT(
 ) {
   try {
     const { id } = await params;
-    const body = await req.json();
+    const data = await req.json();
 
-    const parseResult = clientSchema.safeParse(body);
+    const parseResult = clientSchema.safeParse(data);
     if (!parseResult.success) {
       return errorResponse(formatZodErrors(parseResult.error), 400);
     }
 
     const client = await db.client.update({
       where: { id },
-      data: parseResult.data,
+      data,
     });
-    return NextResponse.json(client);
+
+    return successResponse(client);
   } catch {
     return errorResponse();
   }
@@ -35,7 +36,7 @@ export async function DELETE(
   try {
     const { id } = await params;
     await db.client.delete({ where: { id: id } });
-    return NextResponse.json({ success: true });
+    return successResponse({ success: true });
   } catch (error) {
     if (
       error instanceof Prisma.PrismaClientKnownRequestError &&

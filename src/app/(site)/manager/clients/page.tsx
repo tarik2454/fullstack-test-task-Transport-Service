@@ -25,8 +25,6 @@ export default async function ClientsPage() {
 
   return (
     <div>
-      <h2 className="text-xl font-semibold mb-4">Clients</h2>
-
       <ManagerClientsTable initialClients={data} />
     </div>
   );

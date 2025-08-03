@@ -27,11 +27,13 @@ export async function saveClient(
 
   const { error, data } = await res.json();
 
+  console.log(data);
+
   if (!res.ok) {
     return { success: false, error: error };
   }
 
-  return { success: true, data };
+  return { success: true, data: data };
 }
 
 export async function deleteClient(id: string): Promise<ApiResult<null>> {

@@ -25,10 +25,6 @@ export default async function DriverOrdersPage() {
 
   return (
     <div>
-      <h2 className="text-xl font-semibold mb-4">
-        Available and current orders
-      </h2>
-
       <DriverOrdersTable initialOrders={data} />
     </div>
   );

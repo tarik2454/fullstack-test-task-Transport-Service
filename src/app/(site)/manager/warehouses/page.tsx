@@ -1,152 +1,33 @@
-"use client";
+import { ManagerWarehousesTable } from "@/components/ManagerWarehousesTable";
+import { BASE_URL } from "@/config";
+import { WarehouseData } from "@/schemas/warehouseSchemas";
+import { ApiResultServer } from "@/utils/apiClient/types";
+import { handleFormErrors } from "@/utils/formValidation";
+import { cookies } from "next/headers";
 
-import { useState, useEffect } from "react";
-import { Table, Button, Modal, Form, Input, message } from "antd";
-import {
-  deleteWarehouse,
-  getWarehouses,
-  saveWarehouse,
-} from "@/utils/apiClient/warehouse";
-import {
-  WarehouseData,
-  warehouseCreateSchema,
-} from "@/schemas/warehouseSchemas";
-import { FormLabel } from "@/components/FormLabel";
-import { getValidationRules, handleFormErrors } from "@/utils/formValidation";
+export default async function WarehousesPage() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value;
 
-export default function WarehousesPage() {
-  const [warehouses, setWarehouses] = useState<WarehouseData[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editing, setEditing] = useState<WarehouseData | undefined>(undefined);
-  const [form] = Form.useForm();
+  const res = await fetch(`${BASE_URL}/api/warehouses`, {
+    headers: {
+      Cookie: `token=${token}`,
+    },
+    cache: "no-store",
+  });
 
-  const fetchWarehouses = async () => {
-    setLoading(true);
+  const { data, error }: ApiResultServer<WarehouseData[]> = await res.json();
 
-    const res = await getWarehouses();
+  if (!res.ok || !data) {
+    handleFormErrors(error);
+    return;
+  }
 
-    if (!res.success) {
-      handleFormErrors(res.error);
-      return;
-    }
-
-    setWarehouses(res.data);
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    fetchWarehouses();
-  }, []);
-
-  const handleSave = async () => {
-    const values = form.getFieldsValue() as WarehouseData;
-
-    const payload = editing ? { ...values, id: editing.id } : values;
-
-    const res = await saveWarehouse(payload, editing);
-
-    if (!res.success) {
-      handleFormErrors(res.error, form);
-      return;
-    }
-
-    message.success("Saved");
-    fetchWarehouses();
-    setIsModalOpen(false);
-    form.resetFields();
-    setEditing(undefined);
-  };
-
-  const handleDelete = async (id: string) => {
-    const res = await deleteWarehouse(id);
-
-    if (!res.success) {
-      handleFormErrors(res.error);
-      return;
-    }
-
-    message.success("Deleted");
-    fetchWarehouses();
-  };
+  console.log(data);
 
   return (
     <div>
-      <div className="flex justify-between mb-4">
-        <h2 className="text-xl font-semibold">Warehouses</h2>
-        <Button onClick={() => setIsModalOpen(true)}>Add warehouse</Button>
-      </div>
-
-      <Table
-        rowKey="id"
-        dataSource={warehouses}
-        loading={loading}
-        bordered
-        columns={[
-          {
-            title: "#",
-            dataIndex: "index",
-            key: "index",
-            render: (_: unknown, __: WarehouseData, index: number) => index + 1,
-            width: 50,
-          },
-          { title: "Name", dataIndex: "name" },
-          { title: "Address", dataIndex: "address" },
-          {
-            title: "Actions",
-            render: (_, record) => (
-              <div className="flex gap-2">
-                <Button
-                  size="small"
-                  onClick={() => {
-                    form.setFieldsValue(record);
-                    setEditing(record);
-                    setIsModalOpen(true);
-                  }}
-                >
-                  Change
-                </Button>
-                <Button
-                  size="small"
-                  danger
-                  onClick={() => handleDelete(record.id)}
-                >
-                  Delete
-                </Button>
-              </div>
-            ),
-          },
-        ]}
-      />
-
-      <Modal
-        title={editing ? "Change warehouses" : "Add warehouses"}
-        open={isModalOpen}
-        onOk={handleSave}
-        onCancel={() => {
-          setIsModalOpen(false);
-          form.resetFields();
-          setEditing(undefined);
-        }}
-      >
-        <Form layout="vertical" form={form}>
-          <Form.Item
-            name="name"
-            label={<FormLabel text="Name" required />}
-            rules={getValidationRules(warehouseCreateSchema, "name")}
-          >
-            <Input />
-          </Form.Item>
-
-          <Form.Item
-            name="address"
-            label={<FormLabel text="Address" required />}
-            rules={getValidationRules(warehouseCreateSchema, "address")}
-          >
-            <Input />
-          </Form.Item>
-        </Form>
-      </Modal>
+      <ManagerWarehousesTable initialWarehouses={data} />
     </div>
   );
 }
