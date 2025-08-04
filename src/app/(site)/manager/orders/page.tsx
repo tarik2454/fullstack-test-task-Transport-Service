@@ -1,5 +1,5 @@
 import { OrderData } from "@/schemas/commonOrderSchemas";
-import { handleFormErrors } from "@/utils/formValidation";
+import { handleServerErrors } from "@/utils/formValidation";
 import { BASE_URL } from "@/config";
 import { ApiResultServer } from "@/utils/apiClient/types";
 import { ManagerOrdersTable } from "@/components/ManagerOrdersTable";
@@ -19,7 +19,7 @@ export default async function OrdersPage() {
   const { error, data }: ApiResultServer<OrderData[]> = await res.json();
 
   if (!res.ok || !data) {
-    handleFormErrors(error);
+    handleServerErrors(error);
     return;
   }
 

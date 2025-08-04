@@ -16,7 +16,7 @@ export function getValidationRules<T extends ZodRawShape>(
   ];
 }
 
-export function handleFormErrors(error: unknown, form?: FormInstance) {
+export function handleServerErrors(error: unknown, form?: FormInstance) {
   if (error && typeof error === "object" && !Array.isArray(error) && form) {
     form.setFields(
       Object.entries(error).map(([name, errors]) => ({

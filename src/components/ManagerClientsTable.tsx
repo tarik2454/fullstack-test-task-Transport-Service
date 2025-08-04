@@ -3,7 +3,7 @@
 import { FormLabel } from "@/components/FormLabel";
 import { clientCreateSchema, ClientData } from "@/schemas/clientSchemas";
 import { deleteClient, saveClient } from "@/utils/apiClient/client";
-import { getValidationRules, handleFormErrors } from "@/utils/formValidation";
+import { getValidationRules, handleServerErrors } from "@/utils/formValidation";
 import { upsertToTop } from "@/utils/upsertToTop";
 import { Button, Form, Input, message, Modal, Table } from "antd";
 import { useState } from "react";
@@ -28,7 +28,7 @@ export function ManagerClientsTable({
     const res = await saveClient(payload, editing);
 
     if (!res.success) {
-      handleFormErrors(res.error, form);
+      handleServerErrors(res.error, form);
       return;
     }
 
@@ -48,7 +48,7 @@ export function ManagerClientsTable({
     const res = await deleteClient(id);
 
     if (!res.success) {
-      handleFormErrors(res.error);
+      handleServerErrors(res.error);
       return;
     }
 

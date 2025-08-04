@@ -17,28 +17,30 @@ export async function PUT(
       return errorResponse(formatZodErrors(parseResult.error), 400);
     }
 
+    const currentOrder = await db.order.findUnique({
+      where: { id },
+      select: { status: true },
+    });
+
+    if (!currentOrder) {
+      return errorResponse("Order not found", 404);
+    }
+
+    const newStatus = parseResult.data.status;
+
+    const updateData = {
+      ...parseResult.data,
+      ...(newStatus === "NEW" ? { driverId: null } : {}),
+    };
+
     const order = await db.order.update({
       where: { id },
-      data: parseResult.data,
+      data: updateData,
       include: {
-        client: {
-          select: { name: true },
-        },
-        warehouse: {
-          select: { name: true },
-        },
-        manager: {
-          select: {
-            firstName: true,
-            lastName: true,
-          },
-        },
-        driver: {
-          select: {
-            firstName: true,
-            lastName: true,
-          },
-        },
+        client: { select: { name: true } },
+        warehouse: { select: { name: true } },
+        manager: { select: { firstName: true, lastName: true } },
+        driver: { select: { firstName: true, lastName: true } },
       },
     });
 

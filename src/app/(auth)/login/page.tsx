@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useEffect } from "react";
 import { FormLabel } from "@/components/FormLabel";
 import { LoginData, LoginResponse, loginSchema } from "@/schemas/authSchemas";
-import { handleFormErrors, getValidationRules } from "@/utils/formValidation";
+import { handleServerErrors, getValidationRules } from "@/utils/formValidation";
 import { ApiResultServer } from "@/utils/apiClient/types";
 
 const roleOptions = [
@@ -50,7 +50,7 @@ export default function LoginPage() {
     const { data, error }: ApiResultServer<LoginResponse> = await res.json();
 
     if (!res.ok || !data) {
-      handleFormErrors(error, form);
+      handleServerErrors(error, form);
       return;
     }
 

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Table, message, Select } from "antd";
 import { OrderData } from "@/schemas/commonOrderSchemas";
 import { updateStatus } from "@/utils/apiClient/driver";
-import { handleFormErrors } from "@/utils/formValidation";
+import { handleServerErrors } from "@/utils/formValidation";
 import { upsertToTop } from "@/utils/upsertToTop";
 import { OrderStatus } from "@prisma/client";
 
@@ -29,7 +29,7 @@ export function DriverOrdersTable({
     const res = await updateStatus({ id, status });
 
     if (!res.success) {
-      handleFormErrors(res.error);
+      handleServerErrors(res.error);
       return;
     }
 

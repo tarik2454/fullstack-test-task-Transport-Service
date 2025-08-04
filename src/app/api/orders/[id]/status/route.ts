@@ -33,11 +33,15 @@ export async function PATCH(
 
     const dataToUpdate: {
       status: OrderStatus;
-      driverId?: string;
+      driverId?: string | null;
     } = {
       status: status as OrderStatus,
       ...(currentOrder.status === "NEW" && status !== "NEW"
         ? { driverId: driverIdFromToken }
+        : {}),
+
+      ...(currentOrder.status !== "NEW" && status === "NEW"
+        ? { driverId: null }
         : {}),
     };
 

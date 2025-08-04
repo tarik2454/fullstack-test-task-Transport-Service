@@ -8,18 +8,8 @@ import { formatZodErrors } from "@/utils/server/formatServerErrors";
 const orderInclude = {
   client: true,
   warehouse: true,
-  manager: {
-    select: {
-      firstName: true,
-      lastName: true,
-    },
-  },
-  driver: {
-    select: {
-      firstName: true,
-      lastName: true,
-    },
-  },
+  manager: { select: { firstName: true, lastName: true } },
+  driver: { select: { firstName: true, lastName: true } },
 };
 
 export async function GET() {

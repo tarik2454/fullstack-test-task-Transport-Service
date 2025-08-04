@@ -1,7 +1,7 @@
 "use client";
 
 import { CurrentResponse } from "@/schemas/authSchemas";
-import { handleFormErrors } from "@/utils/formValidation";
+import { handleServerErrors } from "@/utils/formValidation";
 import { message } from "antd";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -24,7 +24,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       const { data, error }: ApiResult<CurrentResponse> = await res.json();
 
       if (!res.ok || !data) {
-        handleFormErrors(error);
+        handleServerErrors(error);
         return;
       }
 
@@ -40,7 +40,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     const { data, error } = await res.json();
 
     if (!res.ok) {
-      handleFormErrors(error);
+      handleServerErrors(error);
       return;
     }
 

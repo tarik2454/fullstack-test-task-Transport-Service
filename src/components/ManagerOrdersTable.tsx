@@ -6,7 +6,7 @@ import {
   OrderData,
 } from "@/schemas/commonOrderSchemas";
 import { deleteOrder, saveOrder } from "@/utils/apiClient/order";
-import { getValidationRules, handleFormErrors } from "@/utils/formValidation";
+import { getValidationRules, handleServerErrors } from "@/utils/formValidation";
 import { Button, Form, message, Modal, Select, Table } from "antd";
 import { useEffect, useState } from "react";
 import { FormLabel } from "./FormLabel";
@@ -83,7 +83,7 @@ export function ManagerOrdersTable({
     const res = await saveOrder(payload, editing);
 
     if (!res.success) {
-      handleFormErrors(res.error, form);
+      handleServerErrors(res.error, form);
       return;
     }
 
@@ -106,7 +106,7 @@ export function ManagerOrdersTable({
     const res = await deleteOrder(id);
 
     if (!res.success) {
-      handleFormErrors(res.error, form);
+      handleServerErrors(res.error, form);
       return;
     }
 

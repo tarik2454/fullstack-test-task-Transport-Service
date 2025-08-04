@@ -2,7 +2,7 @@ import { ManagerClientsTable } from "@/components/ManagerClientsTable";
 import { BASE_URL } from "@/config";
 import { ClientData } from "@/schemas/clientSchemas";
 import { ApiResultServer } from "@/utils/apiClient/types";
-import { handleFormErrors } from "@/utils/formValidation";
+import { handleServerErrors } from "@/utils/formValidation";
 import { cookies } from "next/headers";
 
 export default async function ClientsPage() {
@@ -19,7 +19,7 @@ export default async function ClientsPage() {
   const { data, error }: ApiResultServer<ClientData[]> = await res.json();
 
   if (!res.ok || !data) {
-    handleFormErrors(error);
+    handleServerErrors(error);
     return;
   }
 

@@ -9,7 +9,7 @@ import {
   RegisterResponse,
   registerSchema,
 } from "@/schemas/authSchemas";
-import { getValidationRules, handleFormErrors } from "@/utils/formValidation";
+import { getValidationRules, handleServerErrors } from "@/utils/formValidation";
 import { ApiResultServer } from "@/utils/apiClient/types";
 
 const { Option } = Select;
@@ -30,7 +30,7 @@ export default function RegisterPage() {
     const { data, error }: ApiResultServer<RegisterResponse> = await res.json();
 
     if (!res.ok || !data) {
-      handleFormErrors(error, form);
+      handleServerErrors(error, form);
       return;
     }
 

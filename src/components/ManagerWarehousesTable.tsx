@@ -8,7 +8,7 @@ import {
   warehouseCreateSchema,
 } from "@/schemas/warehouseSchemas";
 import { FormLabel } from "@/components/FormLabel";
-import { getValidationRules, handleFormErrors } from "@/utils/formValidation";
+import { getValidationRules, handleServerErrors } from "@/utils/formValidation";
 import { upsertToTop } from "@/utils/upsertToTop";
 
 export function ManagerWarehousesTable({
@@ -32,7 +32,7 @@ export function ManagerWarehousesTable({
     const res = await saveWarehouse(payload, editing);
 
     if (!res.success) {
-      handleFormErrors(res.error, form);
+      handleServerErrors(res.error, form);
       return;
     }
 
@@ -52,7 +52,7 @@ export function ManagerWarehousesTable({
     const res = await deleteWarehouse(id);
 
     if (!res.success) {
-      handleFormErrors(res.error);
+      handleServerErrors(res.error);
       return;
     }
 
