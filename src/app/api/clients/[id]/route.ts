@@ -1,9 +1,9 @@
 import { NextRequest } from "next/server";
 import { db } from "@/utils/prisma";
 import { Prisma } from "@prisma/client";
-import { errorResponse, successResponse } from "@/utils/server/apiResponse";
+import { errorResponse, successResponse } from "@/app/api/_utils/apiResponse";
 import { clientSchema } from "@/schemas/clientSchemas";
-import { formatZodErrors } from "@/utils/server/formatServerErrors";
+import { formatZodErrors } from "@/app/api/_utils/formatServerErrors";
 
 export async function PUT(
   req: NextRequest,

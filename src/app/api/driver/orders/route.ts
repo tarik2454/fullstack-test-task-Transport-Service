@@ -1,6 +1,6 @@
 import { db } from "@/utils/prisma";
-import { errorResponse, successResponse } from "@/utils/server/apiResponse";
-import { withAuth } from "@/utils/auth/withAuth";
+import { errorResponse, successResponse } from "@/app/api/_utils/apiResponse";
+import { withAuth } from "@/app/api/_utils/auth/withAuth";
 
 export async function GET() {
   try {

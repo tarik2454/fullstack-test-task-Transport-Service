@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
-import { verifyToken } from "@/utils/auth/verifyToken";
-import { successResponse, errorResponse } from "@/utils/server/apiResponse";
+import { verifyToken } from "@/app/api/_utils/auth/verifyToken";
+import { successResponse, errorResponse } from "@/app/api/_utils/apiResponse";
 
 export async function GET() {
   const cookieStore = await cookies();

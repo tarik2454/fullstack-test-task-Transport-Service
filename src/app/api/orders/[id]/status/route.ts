@@ -1,9 +1,9 @@
 import { NextRequest } from "next/server";
 import { db } from "@/utils/prisma";
 import { OrderStatus } from "@prisma/client";
-import { errorResponse, successResponse } from "@/utils/server/apiResponse";
-import { withAuth } from "@/utils/auth/withAuth";
-import { formatZodErrors } from "@/utils/server/formatServerErrors";
+import { errorResponse, successResponse } from "@/app/api/_utils/apiResponse";
+import { withAuth } from "@/app/api/_utils/auth/withAuth";
+import { formatZodErrors } from "@/app/api/_utils/formatServerErrors";
 import { orderStatusUpdateSchema } from "@/schemas/commonOrderSchemas";
 
 export async function PATCH(

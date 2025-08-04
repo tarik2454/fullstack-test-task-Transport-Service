@@ -1,9 +1,9 @@
-import { withAuth } from "@/utils/auth/withAuth";
+import { withAuth } from "@/app/api/_utils/auth/withAuth";
 import { NextRequest } from "next/server";
 import { db } from "@/utils/prisma";
-import { errorResponse, successResponse } from "@/utils/server/apiResponse";
+import { errorResponse, successResponse } from "@/app/api/_utils/apiResponse";
 import { clientCreateSchema } from "@/schemas/clientSchemas";
-import { formatZodErrors } from "@/utils/server/formatServerErrors";
+import { formatZodErrors } from "@/app/api/_utils/formatServerErrors";
 
 export async function GET() {
   try {

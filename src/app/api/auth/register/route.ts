@@ -1,8 +1,8 @@
 import { hash } from "bcryptjs";
 import { db } from "@/utils/prisma";
-import { errorResponse, successResponse } from "@/utils/server/apiResponse";
+import { errorResponse, successResponse } from "@/app/api/_utils/apiResponse";
 import { registerSchema } from "@/schemas/authSchemas";
-import { formatZodErrors } from "@/utils/server/formatServerErrors";
+import { formatZodErrors } from "@/app/api/_utils/formatServerErrors";
 
 export async function POST(req: Request) {
   try {
